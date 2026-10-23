@@ -45,3 +45,7 @@ npm run build
 ## Important persistence note
 
 The current identity/profile/link repository is an **in-memory starter implementation** so the full flow can be exercised without provisioned database credentials. Records are lost when the API process restarts or scales to a new serverless instance. Do not use this in-memory store as production persistence; the next required step is wiring the approved PostgreSQL + Prisma models and migrations before relying on accounts or published profiles. In production, set a unique `JWT_SECRET` of at least 32 characters and configure `WEB_ORIGIN` to the exact allowed web origin(s).
+
+## UI design standards
+
+Read [docs/UI_DESIGN_GUIDELINES.md](docs/UI_DESIGN_GUIDELINES.md) before building or changing UI. It defines the design-planning process, visual quality bar, accessibility and responsive requirements, and the correct iPhone 17 Pro live-preview proportions.
