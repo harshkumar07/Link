@@ -402,3 +402,6 @@
  .app-shell .preview-wrap{min-width:0}
  .app-shell .phone-frame{margin-inline:auto}
 }
+
+/* Keep the editor focused; the full live preview sits below it. */
+.overview-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px}.overview-actions .overview-action{margin-top:0}.preview-section{margin-top:28px;scroll-margin-top:20px}.preview-section>.preview-card{width:100%;min-width:0}.preview-section .preview-wrap{padding:20px}.preview-section .quick-designs{max-width:620px;margin-left:auto;margin-right:auto}.preview-section .phone-frame{margin:0 auto}.preview-section .preview-foot{margin-top:15px}.preview-section .preview-controls{max-width:620px;margin:0 auto 12px}.preview-section .preview-top{max-width:620px;margin:0 auto 15px}.preview-section .preview-live{white-space:nowrap}@media(max-width:540px){.overview-actions{gap:8px}.overview-actions .overview-action{font-size:11px}.preview-section{margin-top:22px}.preview-section .preview-wrap{padding:14px}}
