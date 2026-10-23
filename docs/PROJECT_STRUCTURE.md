@@ -1,6 +1,6 @@
 # Proposed Project Structure
 
-**Status: Proposed — no application source code created yet.**
+**Status: Proposed — no application source code created yet. Technology selections are recorded; the architecture and exact project structure still require explicit user approval.**
 
 The repository currently contains product and architecture documentation. This is a proposal, not a report of existing folders.
 
@@ -32,8 +32,8 @@ Link/
     sdk/                         # Future developer SDK
     config/                      # Shared config only where useful
   docs/adr/
-  package.json
-  pnpm-workspace.yaml            # If pnpm is approved
+  package.json                     # npm workspaces + root scripts
+  package-lock.json               # committed lockfile
   tsconfig.base.json
   .gitignore
   README.md
@@ -52,7 +52,7 @@ The React frontend owns presentation and user interaction. It must not import ba
 - Shared UI components must not contain persistence rules.
 - Never place long-lived API secrets in browser code or browser storage.
 
-**Framework selection pending:** React Router framework mode is the current candidate for React SSR/prerendering and Vercel compatibility. A plain Vite SPA is an alternative for a dashboard-first product but is not the preferred default for SEO-critical public pages. Confirm framework/version before scaffolding.
+**Selected:** React Router Framework Mode with TypeScript. Use SSR for dynamic public profiles and prerender routes only where the content can be safely generated at build time. Use Vercel's official React Router preset for Vercel-specific SSR behavior. Keep dashboard routes in the same app unless independent deployment becomes valuable.
 
 ## 3. API boundaries
 
@@ -91,17 +91,18 @@ The SDK is a later deliverable. Prefer generating it from OpenAPI or another aut
 ## 6. Vercel deployment model
 
 Preferred initial shape:
-- **Web project:** builds/deploys apps/web.
-- **API project:** deploys apps/api as supported request/response Node functions.
-- Both use the same repository and contracts package, with separate environment variables and deployment settings.
+- **Web project:** builds/deploys `apps/web` using React Router Framework Mode and the Vercel React Router preset for SSR.
+- **API project:** deploys `apps/api` using Vercel's supported Fastify integration as request/response Functions.
+- Both use the same repository and `packages/contracts`, with separate environment variables and deployment settings.
+- Use npm workspace-aware install/build settings and verify that both projects can resolve shared workspace packages from the repository root.
 
-Before implementation, verify the selected React framework's Vercel adapter and monorepo root-directory settings. Confirm how API routes are packaged; do not assume an arbitrary long-running Node server runs unchanged as a serverless function.
+Fastify on Vercel is not a promise of a permanently running Node server: function size, execution duration, concurrency, and database connection constraints apply. Test the production-shaped deployment before relying on runtime behavior.
 
 Long-running consumers, continuous polling, and large asynchronous workloads should use a separately deployable worker runtime when needed. Vercel remains the initial web/API hosting choice, not a requirement that every future workload stay on Vercel.
 
 ## 7. Workspace and scripts
 
-If pnpm workspaces are approved, root commands should consistently support install from lockfile, lint, typecheck, unit/integration tests, independent web/API builds, and local development. Exact scripts are defined when tooling is selected. CI must run the same checks used locally.
+Use npm workspaces declared in the root `package.json` and commit `package-lock.json`. Root scripts should consistently support `npm ci`, lint, typecheck, unit/integration tests, independent web/API builds, and local development. CI must run the same checks used locally.
 
 ## 8. Import rules
 
@@ -125,10 +126,10 @@ Add lint or dependency-graph checks after the workspace exists.
 
 ## 10. Structure approval checklist
 
-- [ ] React SSR/prerender framework approved.
-- [ ] Node HTTP framework and Vercel adapter approved.
-- [ ] Workspace manager and root scripts approved.
-- [ ] Database and ORM/migration approach approved.
+- [x] React SSR/prerender framework selected: React Router Framework Mode (architecture approval still pending).
+- [x] Node HTTP framework selected: Fastify (Vercel Function compatibility to be validated in a deployment spike).
+- [x] Workspace manager selected: npm workspaces.
+- [x] Database/ORM selected: managed PostgreSQL + Prisma ORM.
 - [ ] Authentication/session design approved.
 - [ ] Public API contract/versioning policy approved.
 - [ ] Separate web/API deployment roots validated.
