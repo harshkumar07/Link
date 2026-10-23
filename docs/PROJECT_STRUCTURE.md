@@ -1,6 +1,6 @@
-# Proposed Project Structure
+# Approved Project Structure
 
-**Status: Proposed — no application source code created yet. Technology selections are recorded; the architecture and exact project structure still require explicit user approval.**
+**Status: Architecture and project structure approved by the user on 2026-10-23. No application source code has been scaffolded yet.**
 
 The repository currently contains product and architecture documentation. This is a proposal, not a report of existing folders.
 
@@ -90,11 +90,11 @@ The SDK is a later deliverable. Prefer generating it from OpenAPI or another aut
 
 ## 6. Vercel deployment model
 
-Preferred initial shape:
+Approved deployment shape:
 - **Web project:** builds/deploys `apps/web` using React Router Framework Mode and the Vercel React Router preset for SSR.
 - **API project:** deploys `apps/api` using Vercel's supported Fastify integration as request/response Functions.
-- Both use the same repository and `packages/contracts`, with separate environment variables and deployment settings.
-- Use npm workspace-aware install/build settings and verify that both projects can resolve shared workspace packages from the repository root.
+- Both are separate Vercel projects backed by the same Git repository and `packages/contracts`, with independent environment variables, deployment settings, and rollback controls.
+- Use npm workspace-aware install/build settings and configure both projects to resolve shared workspace packages from the repository root.
 
 Fastify on Vercel is not a promise of a permanently running Node server: function size, execution duration, concurrency, and database connection constraints apply. Test the production-shaped deployment before relying on runtime behavior.
 
@@ -126,11 +126,12 @@ Add lint or dependency-graph checks after the workspace exists.
 
 ## 10. Structure approval checklist
 
-- [x] React SSR/prerender framework selected: React Router Framework Mode (architecture approval still pending).
-- [x] Node HTTP framework selected: Fastify (Vercel Function compatibility to be validated in a deployment spike).
-- [x] Workspace manager selected: npm workspaces.
-- [x] Database/ORM selected: managed PostgreSQL + Prisma ORM.
+- [x] React SSR/prerender framework approved: React Router Framework Mode.
+- [x] Node HTTP framework approved: Fastify (validate Vercel Function constraints during foundation setup).
+- [x] Workspace manager approved: npm workspaces.
+- [x] Database/ORM approved: managed PostgreSQL + Prisma ORM.
 - [ ] Authentication/session design approved.
 - [ ] Public API contract/versioning policy approved.
-- [ ] Separate web/API deployment roots validated.
-- [ ] User explicitly approves the structure before feature implementation.
+- [x] Separate web/API Vercel projects selected; root/build configuration must be validated during foundation setup.
+- [x] User explicitly approved the architecture and project structure.
+- [ ] Foundation implementation/scaffolding separately authorized by the user.
