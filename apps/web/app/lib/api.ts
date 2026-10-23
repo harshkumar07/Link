@@ -1,6 +1,6 @@
 export type LinkItem = { id: string; title: string; url: string; kind: string; clicks: number; enabled: boolean };
 export type Profile = { username: string; displayName: string; bio: string; published: boolean; links: LinkItem[] };
-const API_BASE = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? "http://localhost:3001" : "");
+const API_BASE = import.meta.env["VITE_API_URL"] ?? (import.meta.env.DEV ? "http://localhost:3001" : "");
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers);
