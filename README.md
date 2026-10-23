@@ -1,53 +1,52 @@
 # Link
 
-**Link is a creator identity and link-in-bio platform designed to grow into a modular creator operating system.**
+**Link is a developer-extensible creator identity and link-in-bio platform.**
 
-It starts with fast, customizable public profile pages and expands through independently evolvable capabilities such as analytics, custom domains, lead capture, integrations, and creator tools.
+The product starts with fast, customizable public profile pages and grows into a platform with a versioned API, webhooks, integrations, extension contracts, and team capabilities.
 
-## Product principles
-
-- **Fast by default:** public pages should be lightweight, cacheable, mobile-first, and accessible.
-- **Creator-owned identity:** predictable profile URLs, portable content, and transparent privacy controls.
-- **Modular capabilities:** new features must be addable without rewriting core profile publishing.
-- **Secure by design:** authorization on the server, tenant-aware data access, rate limits, abuse controls, and auditable sensitive actions.
-- **Measure before scaling:** instrument performance and cost; add infrastructure only when measured demand requires it.
-- **No premature microservices:** begin as a modular monolith with clear module boundaries and separately scalable workers.
-
-## Documentation
+## Product and architecture documents
 
 - [Product requirements](docs/PRODUCT.md)
 - [Architecture](docs/ARCHITECTURE.md)
+- [Proposed project structure](docs/PROJECT_STRUCTURE.md)
 - [Data model](docs/DATA_MODEL.md)
 - [Roadmap](docs/ROADMAP.md)
-- [Architecture decision records](docs/adr/README.md)
+- [Architecture Decision Records](docs/adr/README.md)
+- [Initial stack decision](docs/adr/0001-react-node-vercel-monorepo.md)
 
-## Proposed initial stack
+## Proposed stack
 
-These are proposed defaults and should be validated against repository constraints before implementation:
+- **Language:** TypeScript across frontend, backend, and shared contracts.
+- **Frontend:** React with a framework that supports server rendering/prerendering for public profile pages; React Router framework mode is the leading candidate. Final selection is pending approval.
+- **Backend:** Node.js + TypeScript API, with framework-neutral application/domain modules.
+- **Hosting:** Vercel for the web app and request/response API endpoints.
+- **Database:** managed PostgreSQL as the durable source of truth.
+- **Database access:** Prisma is a candidate; migrations and repository boundaries are mandatory regardless of ORM.
+- **Contracts:** shared, versioned API schemas; later a generated or maintained TypeScript SDK.
+- **Async processing:** add a durable queue and separate worker runtime when workload needs it. Do not assume Vercel request functions are suitable for long-running jobs.
+- **Caching and media:** CDN/edge caching and object storage where justified by public traffic and media requirements.
 
-- TypeScript
-- Next.js for the web application and public profile rendering
-- PostgreSQL as the source of truth
-- Prisma for schema and migrations, behind module-owned repositories
-- Redis-compatible cache/queue infrastructure when required
-- Object storage for user-uploaded media
-- CDN and edge caching for public assets and cacheable profile responses
-- Automated tests, structured logs, metrics, tracing, and error reporting
+Exact library/provider selections remain proposals until the architecture and project structure are agreed.
 
-The architecture is deliberately provider-neutral where practical. Product/domain code must not depend directly on a specific cloud provider.
+## Architectural principles
 
-## Initial release scope
+- Start with a **modular monolith** and clear module ownership.
+- Keep domain rules independent of React, HTTP frameworks, ORM, and cloud providers.
+- Build public APIs as explicit, versioned contracts; do not expose database models as API responses.
+- Make extension points deliberate and permissioned. Do not execute arbitrary third-party code inside the core application.
+- Keep request handlers stateless; correctness must not depend on one process's memory.
+- Use PostgreSQL constraints and transactions for durable invariants.
+- Cache published public content safely; never leak private dashboard data through shared caches.
+- Use queues, retries, idempotency, and an outbox when asynchronous delivery becomes necessary.
+- Add infrastructure and extract services only when measurements or ownership boundaries justify them.
 
-1. Sign up/sign in and account settings.
-2. Create and edit a profile with a stable username.
-3. Add, reorder, enable/disable, and remove links.
-4. Publish a responsive public profile page.
-5. Theme and profile customization.
-6. Basic privacy settings, validation, abuse protection, and click analytics.
-7. Automated tests and documented deployment/configuration.
+## Delivery order
 
-Advanced commerce, teams, custom domains, AI features, and a public integration marketplace are later capabilities, not prerequisites for launch.
+1. Agree on architecture and repository layout.
+2. Establish workspace tooling, configuration validation, lint/typecheck/tests, and deployment checks.
+3. Implement identity, profiles, links, and publishing.
+4. Harden public read paths, access control, caching, and observability.
+5. Add analytics and the versioned developer API.
+6. Add signed webhooks, API keys, integration contracts, and eventually a carefully sandboxed extension ecosystem.
 
-## Engineering rule
-
-Do not implement a new feature until its ownership, data model, authorization rules, failure behavior, observability, and tests are clear. See the architecture and ADR documents.
+**Current status:** architecture/documentation phase. Product features and application source code have not been implemented.
