@@ -1,12 +1,14 @@
 export type LinkItem = { id: string; title: string; url: string; kind: string; clicks: number; enabled: boolean };
 export type Profile = { username: string; displayName: string; bio: string; published: boolean; links: LinkItem[] };
-const API_BASE = (typeof window !== "undefined" ? (window as Window & { ENV?: { API_URL?: string } }).ENV?.API_URL : undefined) ?? "";
+const API_BASE = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? "http://localhost:3001" : "");
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const headers = new Headers(options.headers);
+  if (!headers.has("content-type")) headers.set("content-type", "application/json");
   const response = await fetch(`${API_BASE}/api/v1${path}`, {
     ...options,
     credentials: "include",
-    headers: { "content-type": "application/json", ...options.headers },
+    headers,
   });
   const payload: unknown = await response.json().catch(() => ({}));
   if (!response.ok) {

@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Link, Form, useNavigation, useSearchParams } from "react-router";
+import { Link, useNavigation, useSearchParams } from "react-router";
 import type { Route } from "./+types/auth";
 import { Brand, Button, Field } from "../components/ui";
 import { api } from "../lib/api";
 import "../styles.css";
 
-export function meta({}: Route.MetaArgs) { return [{ title: "Sign in to Link" }, { name: "description", content: "Sign in to manage your Link profile." }]; }
+export function meta(_args: Route.MetaArgs) { return [{ title: "Sign in to Link" }, { name: "description", content: "Sign in to manage your Link profile." }]; }
 
 export default function AuthPage() {
   const [params] = useSearchParams();

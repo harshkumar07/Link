@@ -33,7 +33,7 @@ function authUser(request: FastifyRequest) {
 function publicProfile(profile: ProfileRecord) {
   return { username: profile.username, displayName: profile.displayName, bio: profile.bio, published: profile.published, links: profile.links.filter((link) => link.enabled).sort((a, b) => a.position - b.position).map(({ id, title, url, kind, clicks, enabled }) => ({ id, title, url, kind, clicks, enabled })) };
 }
-function seedProfile(userId: string, displayName: string, email: string) {
+function seedProfile(userId: string, displayName: string) {
   const base = (displayName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 25) || "creator");
   let username = base; let suffix = 1;
   while (profileByUsername.has(username)) { username = `${base}-${suffix++}`; }
@@ -52,7 +52,7 @@ export function buildApp() {
     if (!parsed.success) return reply.code(400).send({ message: "Enter a valid name, email and password (at least 8 characters)." });
     try {
       const user = await createUser(parsed.data.email, parsed.data.name, parsed.data.password);
-      seedProfile(user.id, user.name, user.email);
+      seedProfile(user.id, user.name);
       setSession(reply, issueToken(user));
       return reply.code(201).send({ user: { id: user.id, email: user.email, name: user.name } });
     } catch (error) {
@@ -78,8 +78,8 @@ export function buildApp() {
     const user = authUser(request);
     if (!user) return reply.code(401).send({ message: "Please sign in to continue." });
     let profile = profiles.get(user.id);
-    if (!profile) profile = seedProfile(user.id, user.name, user.email);
-    return publicProfile(profile);
+    if (!profile) profile = seedProfile(user.id, user.name);
+    return { ...publicProfile(profile), links: profile.links.slice().sort((a, b) => a.position - b.position) };
   });
   app.patch("/api/v1/profile/me", async (request, reply) => {
     const user = authUser(request);
@@ -96,7 +96,7 @@ export function buildApp() {
     if (parsed.data.bio !== undefined) profile.bio = parsed.data.bio;
     if (parsed.data.published !== undefined) profile.published = parsed.data.published;
     profiles.set(user.id, profile);
-    return publicProfile(profile);
+    return { ...publicProfile(profile), links: profile.links.slice().sort((a, b) => a.position - b.position) };
   });
   app.post("/api/v1/profile/me/links", async (request, reply) => {
     const user = authUser(request);

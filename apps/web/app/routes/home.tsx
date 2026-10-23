@@ -14,7 +14,7 @@ const starterLinks: LinkItem[] = [
 const iconFor = (kind: string) => ({ Portfolio: "↗", Social: "◎", Project: "⌘", Contact: "✉", Video: "▷", Store: "◇" }[kind] ?? "↗");
 const number = (value: number) => new Intl.NumberFormat("en-US", { notation: value > 9999 ? "compact" : "standard", maximumFractionDigits: 1 }).format(value);
 
-export function meta(_: Route.MetaArgs) {
+export function meta(_args: Route.MetaArgs) {
   return [{ title: "Link — Creator dashboard" }, { name: "description", content: "Your online home, all in one link." }];
 }
 
@@ -23,7 +23,6 @@ export default function Home() {
   const [toast, setToast] = useState("");
   const [modal, setModal] = useState<"link" | "profile" | null>(null);
   const [editing, setEditing] = useState<LinkItem | null>(null);
-  const [loading, setLoading] = useState(false);
   const [linkTitle, setLinkTitle] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
   const [linkKind, setLinkKind] = useState("Website");
