@@ -52,7 +52,7 @@ export default function Home() {
 
   useEffect(() => {
     window.localStorage.setItem("link-appearance", JSON.stringify({ template, theme, linkStyle, device, baseColor }));
-  }, [template, theme, linkStyle, device]);
+  }, [template, theme, linkStyle, device, baseColor]);
 
   useEffect(() => {
     let cancelled = false;
