@@ -1,227 +1,230 @@
 # Architecture
 
-## 1. Architectural strategy
+## 1. Status and strategy
 
-Start with a **modular monolith** and explicit domain boundaries. Deploy the web/API application as one unit initially, with background workers as a separate runtime when asynchronous work is introduced. Keep module contracts strict so a proven high-load or independently owned module can later be extracted.
+**Status: Proposed; awaiting user approval.** This document defines the intended architecture, not a claim that these technologies are already implemented.
 
-Do not start with a fleet of microservices. Distributed transactions, network failures, deployment coordination, and observability are real costs. Scale by workload first, then extract services only when independent scaling, ownership, security, or reliability requirements justify it.
+Start with a **TypeScript monorepo and modular monolith**. Deploy the web frontend and Node API as separate Vercel projects or separately configured deployments from one repository when practical. Keep domain and application code independent of deployment adapters so a workload can move to another runtime later.
 
-## 2. Logical architecture
+Do not begin with a fleet of microservices. Preserve clear module boundaries and versioned contracts; extract a service only when independently scaling, security, reliability, or ownership needs are demonstrated.
+
+## 2. Technology direction
+
+- React frontend, with server rendering or prerendering for public profile routes.
+- Node.js + TypeScript backend.
+- Vercel for the initial web and HTTP API hosting.
+- Managed PostgreSQL as the source of truth.
+- Prisma is a candidate ORM, subject to approval.
+- Shared schema/contract package for request/response validation and API SDK types.
+- CDN/edge caching for public profile output and static assets.
+- Add object storage, cache, queue, and worker infrastructure only when required.
+
+### Important rendering decision
+
+A pure client-rendered React SPA is simple for dashboards but is a weaker default for indexable, fast public creator pages. Keep React as the UI technology, but prefer a React framework/rendering mode that supports server rendering or static prerendering. React Router framework mode is the current candidate; confirm framework/version and Vercel compatibility before scaffolding.
+
+### Important Vercel boundary
+
+Vercel is a good initial fit for request/response web and API workloads, but do not design long-running or continuously polling background jobs around request functions. Analytics aggregation, scheduled jobs, durable retries, and high-volume event processing may require a queue plus a separate worker runtime later. Keep worker code deployable independently.
+
+## 3. Logical architecture
 
 ```mermaid
 flowchart TD
-  Visitor[Visitors / Creators] --> Edge[DNS, CDN, WAF, rate limits]
-  Edge --> Web[Web app: public pages + dashboard]
-  Web --> Modules[Application modules]
-  Modules --> DB[(PostgreSQL)]
-  Modules --> Cache[(Cache)]
-  Modules --> ObjectStore[(Object storage)]
-  Modules --> Outbox[Transactional outbox]
-  Outbox --> Queue[Queue]
-  Queue --> Workers[Background workers]
-  Workers --> Analytics[Analytics aggregation]
-  Workers --> Email[Email / integrations]
-  Edge --> Static[Static assets via CDN]
+  Visitors[Creators and visitors] --> Edge[CDN / WAF / rate limits]
+  Edge --> Web[React web app: public pages and dashboard]
+  Web --> API[Node TypeScript API]
+  API --> Modules[Application modules]
+  Modules --> DB[(Managed PostgreSQL)]
+  Modules --> Cache[(Optional cache)]
+  Modules --> Storage[(Optional object storage)]
+  Modules --> Outbox[Outbox when durable async work is needed]
+  Outbox --> Queue[Durable queue when required]
+  Queue --> Worker[Separately deployed worker runtime]
+  Worker --> Events[Analytics / webhooks / notifications]
+  Devs[External developers] --> API
+  API --> Contracts[Versioned contracts and permissions]
 ```
 
-This is a target logical view. Optional infrastructure should be added only when a feature needs it. The MVP can run without a dedicated queue, cache, analytics warehouse, or microservices.
+This is a target logical view. Optional infrastructure is not an MVP deployment requirement.
 
-## 3. Runtime boundaries
+## 4. Monorepo proposal
 
-### Web application
-- Serves dashboard and public profile pages.
-- Performs authentication integration and request validation.
-- Calls application use cases; route handlers must not contain business rules.
-- Public page reads must be optimized and safely cacheable.
-- No correctness-critical state may live only in process memory.
+See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md). Proposed workspace boundaries:
 
-### Domain modules
-Each module owns its business rules, schemas/DTOs, use cases, persistence interface, and authorization expectations. Modules must not reach into another module's tables through arbitrary queries or import its internal implementation.
+- `apps/web`: React routes, page composition, public rendering, dashboard UI.
+- `apps/api`: Node HTTP adapter, middleware, authentication integration, API routes.
+- `apps/worker`: future async consumers; do not create until a real job requires it.
+- `packages/contracts`: versioned schemas and API contracts, without database or framework dependencies.
+- `packages/sdk`: future developer SDK generated from or aligned with the public API contract.
+- `packages/config`: shared TypeScript/lint/test configuration where genuinely useful.
+- `docs`: product, architecture, ADRs, security, API lifecycle, and operations.
 
-Initial modules:
-- **Identity & Accounts:** account lifecycle and authentication mapping.
-- **Profiles:** profile settings, publication state, slug rules.
-- **Links:** link validation, ordering, enabled state.
-- **Themes & Media:** theme configuration and media metadata.
-- **Analytics:** event intake, aggregation, retention.
-- **Domains (later):** custom domain verification and routing.
-- **Integrations (later):** provider adapters, webhooks, API keys.
-- **Billing (later):** plans, entitlements, invoices, subscription lifecycle.
-- **Teams (later):** organizations, memberships, roles, invitations.
+Use a workspace manager such as pnpm only after approval. Avoid making a shared package for every trivial helper.
 
-### Background workers
-Use workers for work that does not need to finish in the user request: analytics aggregation, email, previews, webhooks, imports, and scheduled actions. Workers must be safe to retry and must not assume exactly-once delivery.
+## 5. Module boundaries
 
-## 4. Code organization
+Initial domain modules:
+- **Identity & Accounts:** account lifecycle and authentication-provider mapping.
+- **Profiles:** profile ownership, normalized slug, publication state, public profile projection.
+- **Links:** validated destinations, ordering, enabled state, redirects.
+- **Themes & Media:** validated theme configuration and media metadata.
+- **Analytics:** event intake, aggregation, retention, exports.
+- **Developer Platform (later):** API keys, scopes, quotas, API versioning, SDKs, developer documentation.
+- **Webhooks (later):** subscriptions, event schemas, signatures, retries, delivery logs, replay controls.
+- **Integrations (later):** provider adapters and installation lifecycle.
+- **Teams (later):** organizations, membership, roles, invitations.
+- **Billing (later):** plans, entitlements, subscription lifecycle.
 
-Suggested starting structure; adapt to the actual framework without forcing unnecessary packages:
+Every module owns its business rules, application use cases, input/output schemas, persistence interfaces, and authorization expectations. Other modules call its public application contract instead of querying its tables directly.
 
-```text
-src/
-  app/                         # Framework routes, pages, API handlers
-  modules/
-    identity/
-      domain/
-      application/
-      infrastructure/
-      presentation/
-    profiles/
-      domain/
-      application/
-      infrastructure/
-      presentation/
-    links/
-      domain/
-      application/
-      infrastructure/
-      presentation/
-    analytics/
-      domain/
-      application/
-      infrastructure/
-      presentation/
-  platform/
-    database/
-    cache/
-    queue/
-    security/
-    observability/
-    config/
-    storage/
-    testing/
-  shared/
-    contracts/                 # Truly shared stable primitives only
-    errors/
-    validation/
-docs/
-  adr/
-tests/
-  integration/
-  e2e/
-```
+## 6. Dependency rules
 
-Avoid a giant `utils` directory. Shared code must be genuinely reusable and stable; otherwise keep it within its owning module.
+1. React UI calls typed API clients; it does not access the database.
+2. HTTP route handlers authenticate, validate, call a use case, and map the result to an HTTP response.
+3. Application use cases orchestrate domain rules and infrastructure interfaces.
+4. Domain code must not import React, the HTTP framework, ORM, cache SDK, queue SDK, or cloud-provider SDK.
+5. Infrastructure implements repository, storage, queue, and provider interfaces.
+6. Cross-module writes must go through the owning module's use case or an explicit domain/event contract.
+7. Avoid circular dependencies and giant shared utility packages.
+8. Validate input at trust boundaries. Shared schemas help consistency but server validation remains mandatory.
+9. API response DTOs are explicit and stable; never serialize ORM entities directly.
 
-## 5. Dependency rules
+## 7. Developer platform principles
 
-1. Presentation calls application use cases.
-2. Application orchestrates domain rules and depends on interfaces for external capabilities.
-3. Domain code contains business rules and must not import framework, database, cache, queue, or provider SDKs.
-4. Infrastructure implements persistence and provider interfaces.
-5. A module's internals are private; other modules use its public application contracts.
-6. No direct cross-module table writes.
-7. Avoid circular dependencies. If two modules need each other, introduce a clear contract or event.
-8. Use dependency injection/composition at the application boundary.
+Developer features are a first-class architectural concern, but should be delivered in stages.
 
-## 6. Data and persistence
+### Versioned API
+- Start with a documented versioning policy, for example `/api/v1`.
+- Define consistent error envelopes, pagination, filtering, request IDs, and rate-limit headers.
+- Use idempotency keys for operations where safe retries could duplicate side effects.
+- Define compatibility and deprecation policies before external adoption.
+- Keep public API contracts separate from internal database schemas.
 
-- PostgreSQL is the source of truth for accounts, profiles, links, permissions, and configuration.
-- Use migrations committed to source control.
-- Add constraints for invariants that the database can enforce: unique normalized usernames, foreign keys, required fields, and valid ordering keys where practical.
-- Add indexes based on access patterns and query plans, not guesswork.
-- Use cursor/keyset pagination for large or frequently changing lists.
-- Use bounded connection pools and monitor connection saturation.
-- Keep transactions short; never call a slow third-party API inside a database transaction.
-- Design schema changes for expand/migrate/contract deployment.
-- Backups, restore testing, and migration rollback/forward strategy are required.
+### API keys and authorization
+- Store only a cryptographic hash of a newly generated API secret; show the secret once.
+- Support revocation, rotation, expiry where appropriate, scopes, per-account ownership, and audit history.
+- Enforce authorization and quotas on every request; never trust a scope supplied by the client.
+- Keep session cookies, internal credentials, and developer API keys distinct.
+- Do not put long-lived secrets in browser bundles.
 
-## 7. Public page read path
+### Webhooks
+- Deliver only versioned, documented events.
+- Sign each delivery with a secret and timestamp; document verification and replay protection.
+- Retry transient failures with bounded exponential backoff and jitter.
+- Use idempotent delivery IDs, delivery logs, manual replay, and dead-letter handling.
+- Treat delivery as at-least-once, not exactly-once.
+- Prevent server-side request forgery: validate destinations and block private, loopback, link-local, and metadata addresses; revalidate DNS/redirect behavior at delivery time.
+
+### Extensions and integrations
+- Begin with outbound webhooks and supported integrations, not arbitrary executable plugins.
+- Define permission scopes, install/uninstall lifecycle, secret handling, rate limits, and audit logs.
+- If third-party code execution is introduced later, use a separate sandbox/isolation boundary and resource quotas. Never evaluate submitted code inside the core API process.
+
+## 8. Database and persistence
+
+- PostgreSQL is the source of truth for accounts, profiles, links, permissions, API-key metadata, and webhook configuration.
+- Use reviewed, committed migrations.
+- Enforce unique normalized usernames and other durable invariants with database constraints.
+- Use indexes based on observed query patterns and query plans.
+- Use cursor/keyset pagination for large lists and API endpoints.
+- Keep connection pools bounded and account for serverless concurrency; do not allow each function instance to open an unbounded number of connections.
+- Keep transactions short and never make third-party network calls inside a database transaction.
+- Design migrations using expand/migrate/contract for safe deployments.
+- Document backup, restore, and disaster-recovery procedures.
+
+## 9. Public profile read path
 
 1. Visitor requests a profile URL.
-2. Edge layer applies TLS, WAF/bot rules, and rate limits.
-3. Public rendering resolves the normalized slug and published profile.
-4. Read path fetches only fields required for the public page.
-5. Cache safe published output/data using a key that includes the profile identifier and content version.
-6. On profile update/unpublish, invalidate or version the cached result.
-7. Record analytics asynchronously where possible without delaying navigation.
+2. Edge layer applies TLS, WAF/bot protections, and rate limits.
+3. React rendering layer resolves a normalized slug and published profile.
+4. Server fetches only the fields needed for the public view.
+5. Cache public content using a stable key plus content version or a clear invalidation strategy.
+6. On publish/unpublish/update, invalidate or version-bust the public representation.
+7. Capture analytics without blocking the user's navigation.
 
-Never cache private dashboard data in a shared public cache. Cache invalidation must account for unpublishing, deleted profiles, changed slugs, and disabled links.
+Never share-cache private dashboard responses. Account for unpublishing, deletion, slug changes, and disabled links.
 
-## 8. Analytics ingestion
+## 10. Analytics and asynchronous work
 
-- Keep click redirect/navigation fast.
+- Click navigation should not wait for heavy analytics work.
 - Validate event type, profile/link relationship, and payload size.
 - Apply rate limits and bot filtering.
-- Send events to a queue or durable outbox when volume requires it.
-- Consumers should be idempotent; duplicates can happen.
-- Aggregate raw events into time buckets and define retention.
-- Separate operational metrics from product analytics.
-- Do not put unbounded high-cardinality visitor data into general application logs.
+- Begin with a simple durable approach if volume is low; introduce queue-backed ingestion when justified.
+- Workers must tolerate duplicates and retry safely.
+- Use an outbox when a database change must reliably trigger an event.
+- Define retention, aggregation, and privacy rules before collecting detailed attribution.
+- Keep product analytics separate from operational logs.
 
-For the MVP, a simple database-backed event table may be sufficient. Move to a dedicated analytics store only when query patterns and event volume justify the cost.
+## 11. Vercel deployment and portability
 
-## 9. Caching and queues
+- Keep `apps/web` and `apps/api` independently buildable.
+- Use environment-specific configuration and validate required variables at startup/build boundaries.
+- Avoid reliance on local disk persistence, sticky sessions, or in-memory shared state.
+- Use provider-neutral interfaces around database, cache, storage, queues, email, and webhooks.
+- Ensure database connection usage matches serverless concurrency.
+- Keep long-running workers outside request handlers and independently deployable.
+- Verify current Vercel runtime limits, routing, and framework support before deployment configuration is finalized.
 
-- Cache is an optimization, never the source of truth.
-- Every cache entry needs a TTL or explicit invalidation/version strategy.
-- Cache failures should degrade safely to the database within capacity limits.
-- Queue messages should carry versioned, validated payloads and identifiers, not secrets.
-- Configure retry limits, exponential backoff, dead-letter handling, queue age alerts, and idempotency.
-- Use an outbox pattern when a database transaction must reliably trigger asynchronous work.
+## 12. Scaling path
 
-## 10. Scaling path
+### Stage 1 — Foundation and MVP
+React web app, Node API, PostgreSQL, basic CDN, tests, structured logs, and access control.
 
-### Stage 1 — MVP
-One modular application, PostgreSQL, object storage only if needed, CDN for static assets, automated tests, and basic observability.
+### Stage 2 — Developer-ready core
+Stable API v1, documented error/pagination patterns, API contract tests, developer docs, and initial SDK strategy.
 
-### Stage 2 — Growth
-Add caching for hot public profiles, rate limiting, database/query optimization, queue-backed analytics and email, worker autoscaling, and load testing.
+### Stage 3 — Growth
+Cache hot public profiles, add rate limiting, queue-backed analytics/webhooks, and worker runtime where required. Load-test public pages and redirects.
 
-### Stage 3 — High traffic
-Scale stateless web instances horizontally, separate read-heavy workloads where useful, partition or archive event data based on measured growth, improve edge caching, and establish service-level objectives.
+### Stage 4 — Platform scale
+API key scopes/quotas, signed webhooks, delivery logs, integration lifecycle, organization permissions, and usage metering.
 
-### Stage 4 — Very large scale
-Extract only proven bottlenecks or independently operated domains, such as analytics ingestion, redirect/event processing, or domain routing. Define ownership, API/event contracts, data ownership, retries, timeouts, and migration plans before extraction.
+### Stage 5 — High traffic
+Scale stateless API/web deployments, optimize database queries/pooling, separate analytics workloads, and introduce read replicas or partitioning only when measurements justify them.
 
-## 11. Security
+### Stage 6 — Selective service extraction
+Extract a module only when its scale, ownership, isolation, or release requirements justify a separate service. Define data ownership, API/event contracts, timeouts, retries, telemetry, migration, and rollback first.
 
-- Authorize every private operation on the server; never trust client-supplied owner IDs.
-- Use secure, HTTP-only, same-site cookies when cookie-based sessions are selected.
-- Protect mutation endpoints against CSRF where applicable.
-- Validate URL schemes and reject dangerous schemes such as `javascript:`.
-- Escape user-generated text and avoid rendering arbitrary user HTML.
-- Rate-limit authentication, mutations, redirects, and event ingestion.
-- Protect against username/profile enumeration and automated abuse.
-- Verify custom-domain ownership before serving tenant content on a domain.
-- Store secrets in deployment secret management.
-- Use least-privilege credentials and redact tokens, cookies, and sensitive data from logs.
+## 13. Security
+
+- Authorize every private operation server-side.
+- Use secure, HTTP-only, same-site cookies if cookie-based sessions are selected; protect state-changing requests against CSRF where applicable.
+- Validate URL schemes; reject dangerous schemes such as `javascript:`.
+- Escape user-generated content and do not render arbitrary user HTML.
+- Rate-limit authentication, mutations, redirects, API keys, and event ingestion.
+- Redact secrets and personal data from logs.
+- Enforce tenant isolation and test cross-account access.
+- Store API-key hashes, support revocation, and never return a secret after initial creation.
+- Verify ownership of custom domains before serving tenant content.
+- Webhook delivery must resist SSRF and replay.
 - Define account export/deletion and analytics retention policies.
 
-## 12. Observability and reliability
+## 14. Observability and testing
 
 - Structured logs with request/correlation IDs.
-- Metrics for request rate, latency percentiles, error rate, database pool usage, cache hit ratio, queue age, retries, and worker failures.
-- Distributed tracing when multiple runtimes/services make it useful.
-- Alerts tied to user impact and service objectives.
-- Health/readiness checks that do not leak internal details.
-- Document incident response, backup restoration, and dependency failure behavior.
+- Metrics for request rate, latency, errors, database pool saturation, cache hit ratio, queue age, retries, webhook outcomes, and rate-limit decisions.
+- Unit tests for domain rules; integration tests for database and adapters; API tests for auth/validation; E2E tests for publish flow.
+- Contract tests for API clients, webhooks, and SDKs.
+- Load tests for public pages, redirects, and rate-limit enforcement.
+- Test cross-tenant access, cache leakage, key revocation, webhook signature verification, and SSRF defenses.
+- Alerts should reflect user impact and defined service objectives.
 
-## 13. Testing strategy
+## 15. Upgrade and compatibility policy
 
-- Unit tests for domain rules and validation.
-- Integration tests for database constraints, repositories, and transaction behavior.
-- API tests for authentication, authorization, input validation, rate limits, and error contracts.
-- End-to-end tests for signup, profile editing, publishing, public rendering, and unpublishing.
-- Load tests for public profile reads and click redirects.
-- Migration tests against a clean database and a representative existing schema.
-- Security tests for cross-account access and cache leakage.
+- Keep domain models separate from persistence and transport DTOs.
+- Version external APIs and event schemas.
+- Add optional fields before removing or renaming fields.
+- Maintain backward-compatible migrations and queue consumers.
+- Use feature flags and gradual rollouts for risky changes.
+- Maintain ADRs for important choices and record why alternatives were rejected.
 
-## 14. Upgrade and API compatibility
+## 16. Service extraction criteria
 
-- Keep domain models separate from HTTP response DTOs and persistence records.
-- Version public APIs when breaking changes are unavoidable.
-- Add optional fields before removing or renaming existing ones.
-- Use expand/migrate/contract database migrations.
-- Version queue/event payloads and make consumers tolerate unknown optional fields.
-- Use feature flags for risky releases and gradual rollouts.
-- Maintain an ADR for important choices and revisit decisions when evidence changes.
+Extract a module only when there is evidence of one or more:
+- distinct scaling requirements,
+- independent availability/security boundary,
+- separate team and ownership,
+- release cadence or failure modes materially affecting other modules.
 
-## 15. Architecture exit criteria
-
-Do not extract a module into a service until at least one of these is demonstrated:
-- It needs a distinct scaling profile that the monolith cannot meet economically.
-- It needs an independent availability/security boundary.
-- It has a separate team and ownership model.
-- Its release cadence or failure modes materially impede the rest of the product.
-
-Any extraction must include a data ownership plan, contract tests, observability, retries/timeouts, deployment strategy, and rollback path.
+Every extraction requires a data ownership plan, contract tests, observability, retry/timeout rules, deployment strategy, and rollback path.
