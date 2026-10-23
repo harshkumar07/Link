@@ -8,13 +8,13 @@ The product starts with fast, customizable public profile pages and grows into a
 
 - [Product requirements](docs/PRODUCT.md)
 - [Architecture](docs/ARCHITECTURE.md)
-- [Proposed project structure](docs/PROJECT_STRUCTURE.md)
+- [Approved project structure](docs/PROJECT_STRUCTURE.md)
 - [Data model](docs/DATA_MODEL.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Architecture Decision Records](docs/adr/README.md)
 - [Initial stack decision](docs/adr/0001-react-node-vercel-monorepo.md)
 
-## Proposed stack
+## Approved target stack
 
 - **Language:** TypeScript across frontend, backend, and shared contracts.
 - **Frontend:** React Router Framework Mode with SSR for dynamic public profiles and selective prerendering.
@@ -27,7 +27,7 @@ The product starts with fast, customizable public profile pages and grows into a
 - **Async processing:** add a durable queue and separate worker runtime when workload needs it. Do not assume Vercel request functions are suitable for long-running jobs.
 - **Caching and media:** CDN/edge caching and object storage where justified by public traffic and media requirements.
 
-Technology selections are recorded in ADR 0001; the architecture and exact project structure remain proposals until explicitly approved. No application source code or product features have been scaffolded.
+The architecture and project structure were approved by the user on 2026-10-23. Application source code and product features have not been scaffolded; foundation work will begin only when separately requested.
 
 ## Architectural principles
 
