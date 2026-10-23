@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import type { Route } from "./+types/home";
 import { Avatar, Brand, Button, Card, Field, Modal, SectionHeading, Toast } from "../components/ui";
 import type { LinkItem, Profile } from "../lib/api";
 import { api } from "../lib/api";
@@ -14,7 +13,7 @@ const starterLinks: LinkItem[] = [
 const iconFor = (kind: string) => ({ Portfolio: "↗", Social: "◎", Project: "⌘", Contact: "✉", Video: "▷", Store: "◇" }[kind] ?? "↗");
 const number = (value: number) => new Intl.NumberFormat("en-US", { notation: value > 9999 ? "compact" : "standard", maximumFractionDigits: 1 }).format(value);
 
-export function meta(_args: Route.MetaArgs) {
+export function meta() {
   return [{ title: "Link — Creator dashboard" }, { name: "description", content: "Your online home, all in one link." }];
 }
 
