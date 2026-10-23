@@ -129,3 +129,90 @@
  .base-color-row-large button{margin-left:auto}
 }
 @media(prefers-reduced-motion:reduce){.modal,.modal-content{scroll-behavior:auto}}
+
+
+/* Workspace canvas and compact, touch-friendly design controls */
+.app-shell{min-height:100vh;background:var(--workspace-bg,#f5f6f2);color:var(--ink)}
+.app-shell .layout{background:transparent}
+.app-shell .main{min-width:0;background:var(--workspace-bg,#f5f6f2)}
+.app-shell .content{background:transparent}
+.app-shell .topbar{background:color-mix(in srgb,var(--workspace-bg,#f5f6f2) 82%,white);backdrop-filter:blur(14px)}
+.app-shell .sidebar{background:color-mix(in srgb,var(--workspace-bg,#f5f6f2) 74%,white);border-color:color-mix(in srgb,var(--workspace-bg,#f5f6f2) 55%,#dfe2d8)}
+.app-shell .nav-link:hover{background:color-mix(in srgb,var(--workspace-bg,#f5f6f2) 58%,white)}
+.app-shell .nav-link.active{background:color-mix(in srgb,var(--workspace-bg,#f5f6f2) 42%,#e7efda)}
+.app-shell .card,.app-shell .profile-banner{background:#fff}
+.app-shell .preview-card{background:#fff}
+.app-shell .sidebar-promo{background:color-mix(in srgb,var(--workspace-bg,#f5f6f2) 40%,white)}
+.app-shell .workspace-switch{background:color-mix(in srgb,var(--workspace-bg,#f5f6f2) 34%,white)}
+.app-shell .topbar .breadcrumb strong{color:var(--ink)}
+.app-shell .content{max-width:1540px}
+.app-shell .page-heading h1{letter-spacing:-1.35px}
+.app-shell .button,.app-shell .icon-button,.app-shell .card,.app-shell .profile-banner,.app-shell .preview-card{transition:background-color .16s,border-color .16s,box-shadow .16s}
+.app-shell .card{box-shadow:0 2px 8px #20271904}
+.app-shell .card:hover{border-color:#dfe3d7}
+.app-shell .button{border-radius:11px}
+.app-shell .button-primary{box-shadow:0 2px 0 #27331a0a}
+.app-shell .nav-link{min-height:42px}
+.app-shell .nav-link:focus-visible,.app-shell .button:focus-visible,.app-shell .toggle:focus-visible{outline-offset:3px}
+.modal-backdrop{z-index:1000;display:flex;align-items:center;justify-content:center;overscroll-behavior:contain}
+.modal{width:min(100%,620px);max-width:620px}
+.modal-content{scrollbar-width:thin;scrollbar-color:#d9ddd2 transparent}
+.modal-content form,.modal-content .appearance-modal{width:100%;min-width:0}
+.appearance-modal{overflow-wrap:anywhere}
+.appearance-modal .form-actions{position:sticky;bottom:-22px;padding:12px 0 0;background:linear-gradient(transparent,#fff 18%)}
+.base-color-presets button{flex:0 0 auto;touch-action:manipulation}
+.base-color-row button,.design-chip,.theme-swatch,.template-option,.palette-option{touch-action:manipulation}
+@media(max-width:800px){
+ .app-shell .layout{grid-template-columns:minmax(0,1fr)}
+ .app-shell .main{width:100%;min-width:0}
+ .app-shell .topbar{position:sticky;top:0;z-index:20}
+ .app-shell .content{padding:22px 16px 34px}
+ .app-shell .links-layout{grid-template-columns:minmax(0,1fr)}
+ .app-shell .preview-card{min-width:0}
+ .app-shell .preview-wrap{padding:17px}
+ .app-shell .phone-frame{max-width:min(100%,300px)}
+ .app-shell .quick-designs{width:100%;max-width:100%}
+ .app-shell .design-chip-row{gap:7px}
+ .app-shell .design-chip{min-height:36px;padding:9px 11px}
+ .app-shell .modal-backdrop{align-items:flex-end;padding:8px}
+ .app-shell .modal{width:100%;max-width:100%;max-height:88dvh;border-radius:22px 22px 14px 14px}
+ .app-shell .modal-content{padding:16px 17px 22px}
+}
+@media(max-width:540px){
+ .app-shell .content{padding:20px 12px 30px}
+ .app-shell .page-heading h1{font-size:clamp(26px,7vw,32px)}
+ .app-shell .heading-actions{display:flex;gap:8px}
+ .app-shell .heading-actions .button{min-width:0;flex:1;padding:10px 8px;font-size:11px}
+ .app-shell .profile-banner{align-items:flex-start;flex-wrap:wrap}
+ .app-shell .profile-info{flex:1;min-width:120px}
+ .app-shell .banner-actions{width:100%;margin:6px 0 0 55px;justify-content:flex-start}
+ .app-shell .link-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto;gap:8px;padding:12px 10px}
+ .app-shell .link-details{min-width:0}
+ .app-shell .link-url{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .app-shell .link-row .icon-button{width:32px;height:32px}
+ .app-shell .link-row .link-metrics{display:none}
+ .app-shell .preview-controls{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+ .app-shell .preview-controls label{display:flex;align-items:center;justify-content:space-between;gap:10px}
+ .app-shell .preview-controls select{max-width:60%;min-width:0}
+ .app-shell .design-toggle{width:100%;min-height:40px;border-radius:11px}
+ .app-shell .theme-swatches{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ .app-shell .theme-swatch{min-width:0;min-height:55px;font-size:9px}
+ .app-shell .template-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .app-shell .template-option{min-width:0}
+ .app-shell .palette-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .app-shell .base-color-row-large{display:grid;grid-template-columns:42px minmax(0,1fr);gap:10px}
+ .app-shell .base-color-row-large button{grid-column:1/-1;width:100%;margin:0}
+ .app-shell .appearance-modal .form-actions{bottom:-22px}
+ .app-shell .topbar-actions{gap:6px}
+ .app-shell .topbar-actions .icon-button{width:32px;height:32px}
+}
+@media(max-width:360px){
+ .app-shell .content{padding-left:9px;padding-right:9px}
+ .app-shell .heading-actions .button{font-size:10px}
+ .app-shell .link-row{grid-template-columns:30px minmax(0,1fr) 30px 30px;gap:6px}
+ .app-shell .link-symbol{width:30px;height:30px}
+ .app-shell .link-row .toggle{width:30px}
+ .app-shell .link-row .icon-button{width:29px;height:29px}
+ .app-shell .modal-content{padding:14px 13px 20px}
+}
+@media(prefers-reduced-motion:reduce){.app-shell .button,.app-shell .icon-button,.app-shell .card,.app-shell .profile-banner,.app-shell .preview-card{transition:none!important}}
