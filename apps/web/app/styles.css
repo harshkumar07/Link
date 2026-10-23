@@ -352,3 +352,9 @@
  .settings-row-icon{flex-basis:34px;width:34px;height:34px}
  .settings-actions .button{flex:1}
 }
+
+@media(max-width:800px){
+ .app-shell .links-layout>.preview-card{order:-1}
+ .app-shell .links-layout>section{order:1}
+ .app-shell .preview-card{margin-bottom:2px}
+}
