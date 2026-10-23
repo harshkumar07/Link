@@ -68,7 +68,11 @@ export default function Home() {
 
   function updateAppearance(change: { template?: string; theme?: string; linkStyle?: string; baseColor?: string }) {
     if (change.template) setTemplate(change.template);
-    if (change.theme) setTheme(change.theme);
+    if (change.theme) {
+      setTheme(change.theme);
+      const workspacePalettes: Record<string, string> = { sage: "#f5f6f2", midnight: "#f0f1f6", blush: "#fbf2f3", ocean: "#eff6f9", lavender: "#f5f2fb", sunshine: "#fbf8ed" };
+      setWorkspaceColor(workspacePalettes[change.theme] ?? "#f5f6f2");
+    }
     if (change.linkStyle) setLinkStyle(change.linkStyle);
     if (change.baseColor) setBaseColor(change.baseColor);
     void api("/profile/me", { method: "PATCH", body: JSON.stringify(change) }).catch(() => { /* local preview remains usable if the API is unavailable */ });
