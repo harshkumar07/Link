@@ -17,16 +17,17 @@ The product starts with fast, customizable public profile pages and grows into a
 ## Proposed stack
 
 - **Language:** TypeScript across frontend, backend, and shared contracts.
-- **Frontend:** React with a framework that supports server rendering/prerendering for public profile pages; React Router framework mode is the leading candidate. Final selection is pending approval.
-- **Backend:** Node.js + TypeScript API, with framework-neutral application/domain modules.
-- **Hosting:** Vercel for the web app and request/response API endpoints.
+- **Frontend:** React Router Framework Mode with SSR for dynamic public profiles and selective prerendering.
+- **Backend:** Node.js + TypeScript + Fastify HTTP API, designed for Vercel Function execution.
+- **Hosting:** Vercel for web and request/response API deployments.
 - **Database:** managed PostgreSQL as the durable source of truth.
-- **Database access:** Prisma is a candidate; migrations and repository boundaries are mandatory regardless of ORM.
+- **Database access:** Prisma ORM with reviewed migrations and repository boundaries.
+- **Workspace:** npm workspaces and a committed root `package-lock.json`.
 - **Contracts:** shared, versioned API schemas; later a generated or maintained TypeScript SDK.
 - **Async processing:** add a durable queue and separate worker runtime when workload needs it. Do not assume Vercel request functions are suitable for long-running jobs.
 - **Caching and media:** CDN/edge caching and object storage where justified by public traffic and media requirements.
 
-Exact library/provider selections remain proposals until the architecture and project structure are agreed.
+Technology selections are recorded in ADR 0001; the architecture and exact project structure remain proposals until explicitly approved. No application source code or product features have been scaffolded.
 
 ## Architectural principles
 
