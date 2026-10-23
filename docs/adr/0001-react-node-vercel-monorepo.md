@@ -1,15 +1,15 @@
 # ADR 0001: React Router + Fastify + PostgreSQL/Prisma + npm Monorepo
 
-- Status: Proposed — technology selections recorded; architecture awaits explicit user approval
+- Status: Accepted — architecture and project structure approved by the user on 2026-10-23
 - Date: 2026-10-23
 
 ## Context
 
 Link is intended to grow from a creator profile/link product into a developer platform with stable APIs, webhooks, SDKs, and integrations. The selected direction is React for the frontend, Node.js for the backend, Vercel for initial hosting, and a developer-platform-first priority.
 
-Public profile pages need performance and search/social discoverability. Developer-facing APIs need stable contracts, tenant isolation, versioning, quotas, and safe extension boundaries. The repository is currently documentation-only; this ADR does not authorize application scaffolding or feature implementation.
+Public profile pages need performance and search/social discoverability. Developer-facing APIs need stable contracts, tenant isolation, versioning, quotas, and safe extension boundaries. The repository is currently documentation-only. The user has approved the architecture and project structure; this is not itself a request to begin feature implementation.
 
-## Decision proposal
+## Decision
 
 Use a TypeScript monorepo with npm workspaces and these initial boundaries:
 
@@ -18,7 +18,7 @@ Use a TypeScript monorepo with npm workspaces and these initial boundaries:
 - `packages/contracts`: shared public request/response schemas and versioned event contracts.
 - `docs`: architecture, product requirements, data model, roadmap, and ADRs.
 
-Use a modular monolith for business logic rather than starting with microservices. Deploy web and API independently on Vercel from the same repository when practical. Keep long-running workers independently deployable and add them only when needed.
+Use a modular monolith for business logic rather than starting with microservices. Deploy `apps/web` and `apps/api` as separate Vercel projects from the same repository, with independent environment variables and deployment settings. Keep long-running workers independently deployable and add them only when needed.
 
 Use React Router Framework Mode with SSR for dynamic public profile pages and selective prerendering for routes whose content can be safely generated at build time. Vercel documents a dedicated React Router integration and recommends its `@vercel/react-router` preset for Vercel SSR deployments.
 
