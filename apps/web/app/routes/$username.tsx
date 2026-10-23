@@ -1,0 +1,16 @@
+import { useEffect, useState } from "react";
+import type { Route } from "./+types/$username";
+import { Avatar, Brand } from "../components/ui";
+import type { Profile } from "../lib/api";
+import { api } from "../lib/api";
+import "../styles.css";
+
+export function meta({ params }: Route.MetaArgs) { return [{ title: `@${params.username} · Link` }, { name: "description", content: `Discover links shared by ${params.username}.` }]; }
+const iconFor = (kind: string) => ({ Portfolio: "↗", Social: "◎", Project: "⌘", Contact: "✉", Video: "▷", Store: "◇" }[kind] ?? "↗");
+
+export default function PublicProfile({ params }: Route.ComponentProps) {
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { let cancelled = false; api<Profile>(`/public/${encodeURIComponent(params.username)}`).then((data) => { if (!cancelled) setProfile(data); }).catch(() => { if (!cancelled) setProfile(null); }).finally(() => { if (!cancelled) setLoading(false); }); return () => { cancelled = true; }; }, [params.username]);
+  return <main className="public-page"><div className="public-top"><Brand compact/><a className="button button-secondary" href="/login">Create your own ↗</a></div>{loading ? <div className="not-found">Loading profile…</div> : !profile ? <div className="not-found"><h1>Nothing here just yet.</h1><p>This profile may be private or the link may be incorrect.</p><a className="button button-primary" href="/">Back to Link</a></div> : <article className="public-card"><Avatar name={profile.displayName} size="lg" /><h1 style={{ marginTop: 16 }}>{profile.displayName}</h1><div className="public-handle">@{profile.username}</div><p className="public-bio">{profile.bio}</p><div className="public-links">{profile.links.filter((link) => link.enabled).map((link) => <a className="public-link" href={link.url} key={link.id} target="_blank" rel="noopener noreferrer"><span className="public-link-icon">{iconFor(link.kind)}</span><span className="public-link-copy"><span className="public-link-title">{link.title}</span><span className="public-link-url">{link.url.replace(/^https?:\/\//, "")}</span></span><span>↗</span></a>)}</div><footer className="public-footer">Made with <strong>link.</strong></footer></article>}</main>;
+}
