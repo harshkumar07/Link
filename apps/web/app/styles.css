@@ -405,3 +405,51 @@
 
 /* Keep the editor focused; the full live preview sits below it. */
 .overview-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px}.overview-actions .overview-action{margin-top:0}.preview-section{margin-top:28px;scroll-margin-top:20px}.preview-section>.preview-card{width:100%;min-width:0}.preview-section .preview-wrap{padding:20px}.preview-section .quick-designs{max-width:620px;margin-left:auto;margin-right:auto}.preview-section .phone-frame{margin:0 auto}.preview-section .preview-foot{margin-top:15px}.preview-section .preview-controls{max-width:620px;margin:0 auto 12px}.preview-section .preview-top{max-width:620px;margin:0 auto 15px}.preview-section .preview-live{white-space:nowrap}@media(max-width:540px){.overview-actions{gap:8px}.overview-actions .overview-action{font-size:11px}.preview-section{margin-top:22px}.preview-section .preview-wrap{padding:14px}}
+
+/* Clear publish workflow, safe editing, readable gradients and mobile navigation */
+.app-shell{background-image:linear-gradient(125deg,var(--workspace-bg,#f5f6f2) 0%,color-mix(in srgb,var(--workspace-bg,#f5f6f2) 82%,#d9e8c5) 52%,color-mix(in srgb,var(--workspace-bg,#f5f6f2) 84%,#ddd3f5) 100%)}
+.app-shell .main{background:transparent}
+.app-shell .content{background:transparent}
+.app-shell .button:disabled,.app-shell button:disabled{opacity:.42;cursor:not-allowed;box-shadow:none;pointer-events:none}
+.link-heading-actions{display:flex;gap:8px;flex-wrap:wrap}
+.mobile-menu-toggle,.mobile-menu-close{display:none}
+.mobile-sidebar-head{display:flex;align-items:center;justify-content:space-between}
+.preview-device-note{font-size:11px;color:#74786c;font-weight:700;padding:8px 0}
+.preview-controls{align-items:center}
+.preview-section .phone-frame{background-image:linear-gradient(145deg,var(--preview-bg,#f7f8f3),color-mix(in srgb,var(--preview-bg,#f7f8f3) 72%,#ddd3f5),color-mix(in srgb,var(--preview-bg,#f7f8f3) 80%,#d9e8c5))}
+.phone-frame.theme-midnight{--phone-ink:#f8f7ff;--phone-muted:#d5d5e5;--phone-card:#34374d;--phone-accent:#b9adff;color:var(--phone-ink);background:linear-gradient(145deg,#24263b 0%,#34314f 52%,#252b43 100%)!important}
+.phone-frame.theme-midnight .phone-name,.phone-frame.theme-midnight .phone-link-label,.phone-frame.theme-midnight .phone-footer{color:#fff!important}
+.phone-frame.theme-midnight .phone-handle,.phone-frame.theme-midnight .phone-bio{color:#dedff0!important}
+.phone-frame.theme-midnight .phone-link{background:#3b3e56!important;border-color:#5a5d78!important;color:#fff!important}
+.phone-frame.theme-midnight .phone-link-icon{background:#514c75!important;color:#fff!important}
+.phone-frame.theme-midnight .phone-link-arrow{color:#e4ddff!important}
+.phone-frame.theme-midnight .phone-footer span{color:#d7ceff!important}
+.phone-frame.theme-midnight .phone-body{color:#fff}
+.phone-frame.theme-midnight .phone-body .avatar{border-color:#66617e}
+.public-page{background-image:radial-gradient(ellipse at 8% 4%,color-mix(in srgb,var(--profile-accent,#d9e8c5) 62%,transparent),transparent 42%),radial-gradient(ellipse at 94% 94%,color-mix(in srgb,var(--profile-accent,#ddd3f5) 58%,transparent),transparent 43%),linear-gradient(135deg,color-mix(in srgb,var(--profile-bg,#f7f8f3) 90%,white),var(--profile-bg,#f7f8f3) 52%,color-mix(in srgb,var(--profile-bg,#f7f8f3) 86%,var(--profile-accent,#d9e8c5)))}
+.public-page.theme-midnight{--profile-ink:#f8f7ff;--profile-accent:#b9adff;background-color:#171824!important;background-image:radial-gradient(ellipse at 8% 4%,#4b456b 0,transparent 42%),radial-gradient(ellipse at 94% 94%,#283b55 0,transparent 43%),linear-gradient(135deg,#171824,#24263b 60%,#252b43)!important}
+.public-page.theme-midnight .public-card{background:linear-gradient(145deg,#292b42f2,#222438f2);border-color:#ffffff20;color:#f8f7ff}
+.public-page.theme-midnight .public-card h1,.public-page.theme-midnight .public-link-title,.public-page.theme-midnight .public-footer strong{color:#fff}
+.public-page.theme-midnight .public-handle,.public-page.theme-midnight .public-bio,.public-page.theme-midnight .public-footer,.public-page.theme-midnight .public-link-url{color:#d9daeb}
+.public-page.theme-midnight .public-link{background:#34364d;color:#fff;border-color:#ffffff22}
+.public-page.theme-midnight .public-link-icon{background:#4d496c;color:#fff}
+.public-page.theme-midnight .public-top .brand-name{color:#fff}
+@media(max-width:800px){
+ .mobile-menu-toggle{display:inline-grid;place-items:center;flex:0 0 38px}
+ .app-shell .topbar{display:flex;gap:10px}
+ .app-shell .topbar .breadcrumb{flex:1;min-width:0}
+ .app-shell .topbar .breadcrumb span{display:none}
+ .app-shell .sidebar{display:none;position:fixed;inset:0 auto 0 0;z-index:1001;width:min(84vw,300px);height:100dvh;overflow-y:auto;padding:18px;background:#fff;box-shadow:20px 0 70px #151b1533}
+ .app-shell .sidebar.mobile-menu-open{display:flex;flex-direction:column}
+ .mobile-sidebar-head{margin-bottom:12px}
+ .mobile-menu-close{display:inline-grid;place-items:center}
+ .mobile-nav-backdrop{position:fixed;inset:0;z-index:1000;background:#161b1638;border:0}
+ .app-shell .topbar-actions .user-menu{display:none}
+ .app-shell .topbar-actions .icon-button[aria-label="Notifications"],.app-shell .topbar-actions .icon-button[aria-label="Help"]{display:none}
+}
+@media(max-width:540px){
+ .link-heading-actions{gap:6px}
+ .link-heading-actions .button{padding:9px 10px;font-size:11px}
+ .preview-device-note{padding:4px 0}
+ .app-shell .topbar{padding-inline:12px}
+}
