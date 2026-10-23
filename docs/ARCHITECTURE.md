@@ -2,9 +2,9 @@
 
 ## 1. Status and strategy
 
-**Status: Proposed; awaiting user approval.** This document defines the intended architecture, not a claim that these technologies are already implemented.
+**Status: Architecture approved by the user on 2026-10-23.** This document defines the approved target architecture; it does not claim that the technologies are already implemented.
 
-Start with a **TypeScript monorepo and modular monolith**. Deploy the web frontend and Node API as separate Vercel projects or separately configured deployments from one repository when practical. Keep domain and application code independent of deployment adapters so a workload can move to another runtime later.
+Start with a **TypeScript monorepo and modular monolith**. Deploy `apps/web` and `apps/api` as **separate Vercel projects** from the same repository, with independent environments and deployment settings. Configure shared workspace resolution explicitly. Keep domain and application code independent of deployment adapters so a workload can move to another runtime later.
 
 Do not begin with a fleet of microservices. Preserve clear module boundaries and versioned contracts; extract a service only when independently scaling, security, reliability, or ownership needs are demonstrated.
 
@@ -50,7 +50,7 @@ This is a target logical view. Optional infrastructure is not an MVP deployment 
 
 ## 4. Monorepo proposal
 
-See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md). Proposed workspace boundaries:
+See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md). Approved workspace boundaries:
 
 - `apps/web`: React routes, page composition, public rendering, dashboard UI.
 - `apps/api`: Node HTTP adapter, middleware, authentication integration, API routes.
