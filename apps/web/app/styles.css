@@ -280,36 +280,51 @@
 @media(prefers-reduced-motion:reduce){.public-link{transition:none}}
 
 
-/* On phones, the page owns vertical scrolling; the preview is a tall mockup, not a nested scroll area. */
-@media(max-width:800px){
- .app-shell .phone-frame,
- .app-shell .device-frameless{
-   height:auto;
-   min-height:0;
-   max-height:none;
-   aspect-ratio:auto;
-   flex-shrink:0;
-   overflow:hidden;
- }
- .app-shell .phone-frame .phone-body,
- .app-shell .device-frameless .phone-body{
-   flex:0 0 auto;
-   min-height:0;
-   max-height:none;
-   height:auto;
-   overflow:visible;
-   overscroll-behavior:auto;
-   -webkit-overflow-scrolling:auto;
-   touch-action:pan-y;
- }
- .app-shell .preview-card,
- .app-shell .preview-wrap{
-   overflow:visible;
- }
- .app-shell .links-layout,
- .app-shell .main,
- .app-shell .content{
-   min-height:0;
-   overflow:visible;
- }
+/* Keep a true portrait phone mockup on every screen size; the page itself owns scrolling. */
+.app-shell .phone-frame{
+ width:min(100%,275px);
+ max-width:275px;
+ height:auto;
+ aspect-ratio:71.9 / 150;
+ min-height:0;
+ max-height:none;
+ flex-shrink:0;
+ overflow:hidden;
+ border:5px solid #292a25;
+ border-radius:34px;
 }
+.app-shell .phone-frame .phone-notch{flex:0 0 25px}
+.app-shell .phone-frame .phone-body{
+ flex:1;
+ min-height:0;
+ max-height:none;
+ height:auto;
+ overflow:hidden;
+ overscroll-behavior:auto;
+ touch-action:auto;
+}
+.app-shell .device-frameless{
+ height:auto;
+ min-height:0;
+ max-height:none;
+ aspect-ratio:auto;
+ overflow:hidden;
+}
+.app-shell .device-frameless .phone-body{height:auto;overflow:hidden}
+.app-shell .preview-card,.app-shell .preview-wrap{overflow:visible}
+.app-shell .links-layout,.app-shell .main,.app-shell .content{min-height:0;overflow:visible}
+@media(max-width:800px){
+ .app-shell .phone-frame{width:min(100%,275px);max-width:275px;aspect-ratio:71.9 / 150}
+ .app-shell .preview-card{min-width:0}
+ .app-shell .link-row{grid-template-columns:34px minmax(0,1fr) auto;gap:8px}
+ .app-shell .link-row .link-metrics{display:none}
+}
+@media(max-width:540px){
+ .app-shell .phone-frame{width:min(100%,275px);max-width:275px;aspect-ratio:71.9 / 150}
+ .app-shell .link-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:8px;padding:12px 10px}
+ .app-shell .link-row .icon-button{width:32px;height:32px}
+ .app-shell .link-row .toggle{grid-column:3;grid-row:1}
+ .app-shell .link-row .link-details{min-width:0}
+ .app-shell .link-row .link-url{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
+@media(max-width:360px){.app-shell .phone-frame{width:min(100%,260px)}}
