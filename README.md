@@ -30,7 +30,7 @@ npm run dev:api
 npm run dev:web
 ```
 
-The web app runs on the React Router development port (normally http://localhost:5173); the API defaults to http://localhost:3001. Set `WEB_ORIGIN` to the web origin when running the API.
+The web app runs on the React Router development port (normally http://localhost:5173); the API defaults to http://localhost:3001. Set `WEB_ORIGIN` to the web origin when running the API. For separately deployed apps, set `VITE_API_URL` in the web project's build environment to the API's HTTPS origin.
 
 ## Quality checks
 
