@@ -86,7 +86,7 @@ export function buildApp() {
     if (!user) return reply.code(401).send({ message: "Please sign in to continue." });
     const parsed = profilePatch.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ message: "Profile details are invalid." });
-    const profile = profiles.get(user.id) ?? seedProfile(user.id, user.name, user.email);
+    const profile = profiles.get(user.id) ?? seedProfile(user.id, user.name);
     if (parsed.data.username && parsed.data.username !== profile.username) {
       const owner = profileByUsername.get(parsed.data.username);
       if (owner && owner !== user.id) return reply.code(409).send({ message: "That username is already taken." });
@@ -103,7 +103,7 @@ export function buildApp() {
     if (!user) return reply.code(401).send({ message: "Please sign in to continue." });
     const parsed = linkInput.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ message: "Enter a title and a valid destination URL." });
-    const profile = profiles.get(user.id) ?? seedProfile(user.id, user.name, user.email);
+    const profile = profiles.get(user.id) ?? seedProfile(user.id, user.name);
     const link: LinkRecord = { id: crypto.randomUUID(), title: parsed.data.title!, url: parsed.data.url!, kind: parsed.data.kind ?? "Website", clicks: 0, enabled: parsed.data.enabled ?? true, position: profile.links.length };
     profile.links.push(link); profiles.set(user.id, profile);
     return reply.code(201).send({ link });
