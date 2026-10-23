@@ -1,5 +1,5 @@
 export type LinkItem = { id: string; title: string; url: string; kind: string; clicks: number; enabled: boolean };
-export type Profile = { username: string; displayName: string; bio: string; published: boolean; template?: "stack" | "profile" | "cards" | "minimal" | "gradient"; theme?: "sage" | "midnight" | "blush" | "ocean" | "lavender" | "sunshine"; linkStyle?: "soft" | "outline" | "solid"; links: LinkItem[] };
+export type Profile = { username: string; displayName: string; bio: string; published: boolean; template?: "stack" | "profile" | "cards" | "minimal" | "gradient"; theme?: "sage" | "midnight" | "blush" | "ocean" | "lavender" | "sunshine"; linkStyle?: "soft" | "outline" | "solid"; baseColor?: string; links: LinkItem[] };
 const API_BASE = import.meta.env["VITE_API_URL"] ?? (import.meta.env.DEV ? "http://localhost:3001" : "");
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
