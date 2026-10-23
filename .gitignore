@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+.cache/
+.react-router/
+.vercel/
+.env
+.env.*
+!.env.example
+coverage/
+*.log
+.DS_Store
