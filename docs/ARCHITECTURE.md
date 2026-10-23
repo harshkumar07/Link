@@ -10,18 +10,18 @@ Do not begin with a fleet of microservices. Preserve clear module boundaries and
 
 ## 2. Technology direction
 
-- React frontend, with server rendering or prerendering for public profile routes.
-- Node.js + TypeScript backend.
-- Vercel for the initial web and HTTP API hosting.
-- Managed PostgreSQL as the source of truth.
-- Prisma is a candidate ORM, subject to approval.
-- Shared schema/contract package for request/response validation and API SDK types.
-- CDN/edge caching for public profile output and static assets.
+- **Frontend:** React Router in Framework Mode, TypeScript, SSR for dynamic public profiles, with static prerendering where appropriate.
+- **Backend:** Node.js + TypeScript + Fastify for the versioned HTTP API.
+- **Hosting:** Vercel for initial web and API deployments.
+- **Database:** managed PostgreSQL as the source of truth, accessed through Prisma ORM.
+- **Workspace:** npm workspaces with a committed `package-lock.json`.
+- **Contracts:** shared schema/contract package for request/response validation and API SDK types.
+- **CDN:** Vercel CDN/edge caching for public profile output and static assets.
 - Add object storage, cache, queue, and worker infrastructure only when required.
 
 ### Important rendering decision
 
-A pure client-rendered React SPA is simple for dashboards but is a weaker default for indexable, fast public creator pages. Keep React as the UI technology, but prefer a React framework/rendering mode that supports server rendering or static prerendering. React Router framework mode is the current candidate; confirm framework/version and Vercel compatibility before scaffolding.
+A pure client-rendered React SPA is simple for dashboards but is a weaker default for indexable, fast public creator pages. Keep React as the UI technology, but prefer a React framework/rendering mode that supports server rendering or static prerendering. React Router Framework Mode is selected. Vercel documents a React Router integration and recommends the `@vercel/react-router` preset for SSR deployments; verify the exact framework and adapter versions at implementation time.
 
 ### Important Vercel boundary
 
@@ -60,7 +60,7 @@ See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md). Proposed workspace boundaries:
 - `packages/config`: shared TypeScript/lint/test configuration where genuinely useful.
 - `docs`: product, architecture, ADRs, security, API lifecycle, and operations.
 
-Use a workspace manager such as pnpm only after approval. Avoid making a shared package for every trivial helper.
+Use npm workspaces, declared in the root `package.json`, and commit `package-lock.json` for reproducible installs. Avoid making a shared package for every trivial helper.
 
 ## 5. Module boundaries
 
@@ -124,11 +124,11 @@ Developer features are a first-class architectural concern, but should be delive
 ## 8. Database and persistence
 
 - PostgreSQL is the source of truth for accounts, profiles, links, permissions, API-key metadata, and webhook configuration.
-- Use reviewed, committed migrations.
+- Use Prisma ORM with reviewed, committed Prisma migrations. Keep schema changes and generated client setup explicit in workspace scripts.
 - Enforce unique normalized usernames and other durable invariants with database constraints.
 - Use indexes based on observed query patterns and query plans.
 - Use cursor/keyset pagination for large lists and API endpoints.
-- Keep connection pools bounded and account for serverless concurrency; do not allow each function instance to open an unbounded number of connections.
+- Keep connection pools bounded and account for serverless concurrency. Configure a pooled runtime connection URL where the database provider supports it and a direct/migration URL where Prisma migrations require it; never allow each function instance to open unbounded connections.
 - Keep transactions short and never make third-party network calls inside a database transaction.
 - Design migrations using expand/migrate/contract for safe deployments.
 - Document backup, restore, and disaster-recovery procedures.
@@ -158,13 +158,15 @@ Never share-cache private dashboard responses. Account for unpublishing, deletio
 
 ## 11. Vercel deployment and portability
 
-- Keep `apps/web` and `apps/api` independently buildable.
+- Keep `apps/web` and `apps/api` independently buildable and deployable.
+- Use the official React Router Vercel preset for SSR where applicable, and validate route caching and invalidation carefully.
+- Deploy Fastify through Vercel's supported Fastify/Function integration; treat it as request/response serverless compute, not a guaranteed persistent Node process.
 - Use environment-specific configuration and validate required variables at startup/build boundaries.
 - Avoid reliance on local disk persistence, sticky sessions, or in-memory shared state.
 - Use provider-neutral interfaces around database, cache, storage, queues, email, and webhooks.
 - Ensure database connection usage matches serverless concurrency.
 - Keep long-running workers outside request handlers and independently deployable.
-- Verify current Vercel runtime limits, routing, and framework support before deployment configuration is finalized.
+- Fastify is supported on Vercel as a Function, but Vercel Function constraints (including bundle-size and runtime limits) still apply. Verify current limits and cold-start/connection behavior before deployment configuration is finalized.
 
 ## 12. Scaling path
 
@@ -212,7 +214,7 @@ Extract a module only when its scale, ownership, isolation, or release requireme
 
 ## 15. Upgrade and compatibility policy
 
-- Keep domain models separate from persistence and transport DTOs.
+- Keep domain models separate from persistence and transport DTOs. Prisma is an infrastructure adapter, not a domain dependency.
 - Version external APIs and event schemas.
 - Add optional fields before removing or renaming fields.
 - Maintain backward-compatible migrations and queue consumers.
