@@ -4,7 +4,7 @@ import { z } from "zod";
 import { createUser, findUserByEmail, findUserById, issueToken, verifyPassword, verifyToken } from "./auth.js";
 
 type LinkRecord = { id: string; title: string; url: string; kind: string; clicks: number; enabled: boolean; position: number };
-type ProfileRecord = { userId: string; username: string; displayName: string; bio: string; published: boolean; template: "stack" | "profile" | "cards" | "minimal" | "gradient"; theme: "sage" | "midnight" | "blush" | "ocean" | "lavender" | "sunshine"; linkStyle: "soft" | "outline" | "solid"; links: LinkRecord[] };
+type ProfileRecord = { userId: string; username: string; displayName: string; bio: string; published: boolean; template: "stack" | "profile" | "cards" | "minimal" | "gradient"; theme: "sage" | "midnight" | "blush" | "ocean" | "lavender" | "sunshine"; linkStyle: "soft" | "outline" | "solid"; baseColor: string; links: LinkRecord[] };
 const profiles = new Map<string, ProfileRecord>();
 const profileByUsername = new Map<string, string>();
 const cookieName = "link_session";
@@ -12,7 +12,7 @@ const emailSchema = z.string().trim().email().max(254);
 const passwordSchema = z.string().min(8).max(128);
 const slugSchema = z.string().trim().toLowerCase().regex(/^[a-z0-9](?:[a-z0-9-]{1,28}[a-z0-9])?$/);
 const linkInput = z.object({ title: z.string().trim().min(1).max(70), url: z.string().trim().max(2048).refine((value) => { try { const parsed = new URL(value); return ["http:", "https:", "mailto:", "tel:"].includes(parsed.protocol); } catch { return false; } }), kind: z.string().trim().min(1).max(30).default("Website"), enabled: z.boolean().optional() }).partial({ enabled: true });
-const profilePatch = z.object({ username: slugSchema.optional(), displayName: z.string().trim().min(1).max(80).optional(), bio: z.string().trim().max(280).optional(), published: z.boolean().optional(), template: z.enum(["stack", "profile", "cards", "minimal", "gradient"]).optional(), theme: z.enum(["sage", "midnight", "blush", "ocean", "lavender", "sunshine"]).optional(), linkStyle: z.enum(["soft", "outline", "solid"]).optional() });
+const profilePatch = z.object({ username: slugSchema.optional(), displayName: z.string().trim().min(1).max(80).optional(), bio: z.string().trim().max(280).optional(), published: z.boolean().optional(), template: z.enum(["stack", "profile", "cards", "minimal", "gradient"]).optional(), theme: z.enum(["sage", "midnight", "blush", "ocean", "lavender", "sunshine"]).optional(), linkStyle: z.enum(["soft", "outline", "solid"]).optional(), baseColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional() });
 
 function setSession(reply: FastifyReply, token: string) {
   const secure = process.env["NODE_ENV"] === "production" ? "; Secure" : "";
@@ -31,13 +31,13 @@ function authUser(request: FastifyRequest) {
   return payload ? findUserById(payload.sub) : undefined;
 }
 function publicProfile(profile: ProfileRecord) {
-  return { username: profile.username, displayName: profile.displayName, bio: profile.bio, published: profile.published, template: profile.template, theme: profile.theme, linkStyle: profile.linkStyle, links: profile.links.filter((link) => link.enabled).sort((a, b) => a.position - b.position).map(({ id, title, url, kind, clicks, enabled }) => ({ id, title, url, kind, clicks, enabled })) };
+  return { username: profile.username, displayName: profile.displayName, bio: profile.bio, published: profile.published, template: profile.template, theme: profile.theme, linkStyle: profile.linkStyle, baseColor: profile.baseColor, links: profile.links.filter((link) => link.enabled).sort((a, b) => a.position - b.position).map(({ id, title, url, kind, clicks, enabled }) => ({ id, title, url, kind, clicks, enabled })) };
 }
 function seedProfile(userId: string, displayName: string) {
   const base = (displayName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 25) || "creator");
   let username = base; let suffix = 1;
   while (profileByUsername.has(username)) { username = `${base}-${suffix++}`; }
-  const profile: ProfileRecord = { userId, username, displayName, bio: "A little bit about me goes here.", published: false, template: "stack", theme: "sage", linkStyle: "soft", links: [] };
+  const profile: ProfileRecord = { userId, username, displayName, bio: "A little bit about me goes here.", published: false, template: "stack", theme: "sage", linkStyle: "soft", baseColor: "#f7f8f3", links: [] };
   profiles.set(userId, profile); profileByUsername.set(username, userId);
   return profile;
 }
@@ -98,6 +98,7 @@ export function buildApp() {
     if (parsed.data.template !== undefined) profile.template = parsed.data.template;
     if (parsed.data.theme !== undefined) profile.theme = parsed.data.theme;
     if (parsed.data.linkStyle !== undefined) profile.linkStyle = parsed.data.linkStyle;
+    if (parsed.data.baseColor !== undefined) profile.baseColor = parsed.data.baseColor;
     profiles.set(user.id, profile);
     return { ...publicProfile(profile), links: profile.links.slice().sort((a, b) => a.position - b.position) };
   });
