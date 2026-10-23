@@ -34,6 +34,7 @@ export default function Home() {
   const [theme, setTheme] = useState("sage");
   const [baseColor, setBaseColor] = useState("#f7f8f3");
   const [workspaceColor, setWorkspaceColor] = useState("#f5f6f2");
+  const [appearanceLoaded, setAppearanceLoaded] = useState(false);
   const [linkStyle, setLinkStyle] = useState("soft");
   const [device, setDevice] = useState("iphone");
   const [showDesigns, setShowDesigns] = useState(true);
@@ -51,11 +52,13 @@ export default function Home() {
         if (value.workspaceColor) setWorkspaceColor(value.workspaceColor);
       }
     } catch { /* keep defaults when saved preferences are unavailable */ }
+    setAppearanceLoaded(true);
   }, []);
 
   useEffect(() => {
+    if (!appearanceLoaded) return;
     window.localStorage.setItem("link-appearance", JSON.stringify({ template, theme, linkStyle, device, baseColor, workspaceColor }));
-  }, [template, theme, linkStyle, device, baseColor, workspaceColor]);
+  }, [appearanceLoaded, template, theme, linkStyle, device, baseColor, workspaceColor]);
 
   useEffect(() => {
     let cancelled = false;
