@@ -65,3 +65,13 @@
 .design-chip:focus-visible,.theme-swatch:focus-visible,.template-option:focus-visible,.palette-option:focus-visible,.design-toggle:focus-visible{outline:3px solid #9ecb57;outline-offset:2px}
 @media(max-width:540px){.public-page.template-cards .public-links{grid-template-columns:repeat(2,minmax(0,1fr))}.public-page.template-cards .public-link{min-height:112px;padding:11px}.public-page.template-gradient .public-card{padding:20px 14px;border-radius:22px}}
 @media(prefers-reduced-motion:reduce){.public-page,.phone-frame,.phone-frame .phone-link,.design-chip,.theme-swatch,.template-option,.palette-option{transition:none!important}}
+
+/* Avatar component selectors: the shared Avatar renders .avatar, not .public-avatar/.phone-avatar */
+.phone-frame .phone-body>.avatar{display:grid;place-items:center;width:57px;height:57px;margin:0 auto 11px;border:3px solid var(--preview-button);background:var(--preview-accent);color:var(--preview-ink);box-shadow:0 0 0 1px var(--preview-border);font:800 18px Manrope;flex-shrink:0}
+.phone-frame.template-profile .phone-body>.avatar{width:70px;height:70px;margin-bottom:13px;border:3px solid var(--preview-button);box-shadow:0 0 0 4px var(--preview-accent),0 8px 20px #0000000b}
+.phone-frame.template-cards .phone-body>.avatar{width:48px;height:48px;margin-bottom:12px}
+.phone-frame.template-gradient .phone-body>.avatar{box-shadow:0 0 0 4px var(--preview-button),0 0 0 7px var(--preview-accent)}
+.public-page .public-card>.avatar{width:90px;height:90px;margin:0 auto 18px;border:4px solid var(--profile-surface);background:var(--profile-accent);color:var(--profile-ink);box-shadow:0 8px 28px #0000000d;font-size:27px}
+.public-page.template-profile .public-card>.avatar{width:108px;height:108px;border:5px solid var(--profile-surface);box-shadow:0 0 0 5px var(--profile-accent),0 10px 28px #0000000d}
+.public-page.template-cards .public-card>.avatar{width:72px;height:72px;font-size:22px}
+.public-page.template-gradient .public-card>.avatar{box-shadow:0 0 0 5px var(--profile-surface),0 0 0 9px var(--profile-accent)}
