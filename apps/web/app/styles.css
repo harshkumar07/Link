@@ -216,3 +216,18 @@
  .app-shell .modal-content{padding:14px 13px 20px}
 }
 @media(prefers-reduced-motion:reduce){.app-shell .button,.app-shell .icon-button,.app-shell .card,.app-shell .profile-banner,.app-shell .preview-card{transition:none!important}}
+
+
+/* Palette selection carries through the creator dashboard, not only the preview */
+.app-shell.theme-sage{--lime:#c8f169;--green:#567d2e}
+.app-shell.theme-midnight{--lime:#d7d0ff;--green:#6353a6}
+.app-shell.theme-blush{--lime:#f4c5ce;--green:#a54f68}
+.app-shell.theme-ocean{--lime:#c5e8f5;--green:#256c87}
+.app-shell.theme-lavender{--lime:#ddd0ff;--green:#7554a7}
+.app-shell.theme-sunshine{--lime:#f5dfa0;--green:#85651d}
+.app-shell .profile-url strong{color:var(--green)}
+.app-shell .live-status,.app-shell .positive{color:var(--green)}
+.app-shell .stat-icon{background:color-mix(in srgb,var(--lime) 30%,white);color:var(--green)}
+.app-shell .nav-count{background:color-mix(in srgb,var(--lime) 36%,white)}
+.app-shell .nav-link.active{color:color-mix(in srgb,var(--green) 82%,#20231b)}
+.app-shell .brand-symbol{background:var(--lime)}
