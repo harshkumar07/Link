@@ -119,7 +119,7 @@ export default function Home() {
 
           <div className="content">
             <div className="heading-row">
-              <div><div className="eyebrow">MONDAY, OCTOBER 26</div><h1 className="page-title">Your little corner of the internet.</h1><p className="subtitle">Everything you share, all in one place. Here's how you're doing.</p></div>
+              <div><div className="eyebrow">YOUR CREATOR DASHBOARD</div><h1 className="page-title">Your little corner of the internet.</h1><p className="subtitle">Everything you share, all in one place. Here's how you're doing.</p></div>
               <div className="heading-actions"><button className="button-secondary" onClick={() => notify("Your public page preview is on the right.")}>◉ Preview page</button><button className="button-primary" onClick={addLink}>＋ Add a link</button></div>
             </div>
 
@@ -139,10 +139,9 @@ export default function Home() {
               <section>
                 <div className="section-row"><div><h2 className="section-title">Your links <span style={{ color: "#a2a39b", fontWeight: 500 }}>({links.length})</span></h2><div className="section-caption">Make it easy for people to find your best stuff.</div></div><button className="button-secondary" onClick={addLink}>＋ Add new</button></div>
                 <div className="links-card">
-                  <div className="links-card-head"><strong>All links</strong><span className="muted-small">{enabledLinks.length} active · Drag to reorder</span></div>
+                  <div className="links-card-head"><strong>All links</strong><span className="muted-small">{enabledLinks.length} active · Manage visibility and preview</span></div>
                   {links.map((link) => (
                     <div className={`link-row ${link.enabled ? "" : "off"}`} key={link.id}>
-                      <span className="drag" aria-hidden="true">⠿</span>
                       <div className="link-symbol">{icons[link.kind] ?? "↗"}</div>
                       <div className="link-details"><div className="link-title">{link.title}</div><div className="link-url">{link.url}</div></div>
                       <div className="link-metrics"><div className="link-clicks">{link.clicks.toLocaleString("en-US")}</div><div className="link-click-label">clicks</div></div>
