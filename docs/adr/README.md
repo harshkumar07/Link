@@ -1,13 +1,13 @@
 # Architecture Decision Records (ADRs)
 
-Record decisions that are costly to reverse or affect multiple modules.
+ADRs record choices that are costly to reverse or affect multiple modules. A decision can remain proposed until the user approves it.
 
 ## When to write an ADR
-- Selecting core frameworks, database, authentication, hosting, or queue provider.
+- Selecting frameworks, runtimes, database, authentication, hosting, or queue provider.
 - Defining module ownership or changing module boundaries.
-- Adding a cache, worker system, event bus, or separate service.
+- Adding cache, worker system, event bus, or separate service.
 - Changing public API compatibility, identity, privacy, or analytics retention.
-- Choosing a migration or data partitioning strategy.
+- Choosing migration, data partitioning, API key, webhook, or extension strategies.
 
 ## Template
 
@@ -35,9 +35,10 @@ Benefits, trade-offs, risks, and operational cost.
 What evidence would justify changing this decision?
 ```
 
-## Initial decisions to record
-1. Framework and runtime.
-2. PostgreSQL/ORM and migration strategy.
-3. Authentication and session strategy.
-4. Hosting, CDN, object storage, and domain strategy.
-5. Analytics event ingestion and retention.
+## Initial decision records
+1. [React + Node + Vercel monorepo](0001-react-node-vercel-monorepo.md) — proposed.
+2. Database/ORM and migration strategy — pending.
+3. Authentication and session strategy — pending.
+4. Public API versioning and developer key lifecycle — pending.
+5. Analytics ingestion, webhooks, and retention — pending.
+6. Hosting, CDN, object storage, and custom domains — pending.
