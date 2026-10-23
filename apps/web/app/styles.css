@@ -278,3 +278,38 @@
  .public-link-url{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){.public-link{transition:none}}
+
+
+/* On phones, the page owns vertical scrolling; the preview is a tall mockup, not a nested scroll area. */
+@media(max-width:800px){
+ .app-shell .phone-frame,
+ .app-shell .device-frameless{
+   height:auto;
+   min-height:0;
+   max-height:none;
+   aspect-ratio:auto;
+   flex-shrink:0;
+   overflow:hidden;
+ }
+ .app-shell .phone-frame .phone-body,
+ .app-shell .device-frameless .phone-body{
+   flex:0 0 auto;
+   min-height:0;
+   max-height:none;
+   height:auto;
+   overflow:visible;
+   overscroll-behavior:auto;
+   -webkit-overflow-scrolling:auto;
+   touch-action:pan-y;
+ }
+ .app-shell .preview-card,
+ .app-shell .preview-wrap{
+   overflow:visible;
+ }
+ .app-shell .links-layout,
+ .app-shell .main,
+ .app-shell .content{
+   min-height:0;
+   overflow:visible;
+ }
+}
