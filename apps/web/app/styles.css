@@ -453,3 +453,6 @@
  .preview-device-note{padding:4px 0}
  .app-shell .topbar{padding-inline:12px}
 }
+
+@media(max-width:540px){.app-shell .link-row.edit-mode{grid-template-columns:30px minmax(0,1fr) 28px 28px 28px;gap:5px}.app-shell .link-row.edit-mode .delete-link-button{grid-column:auto;grid-row:auto;width:28px;height:30px;padding:0}.app-shell .link-row.edit-mode .toggle{width:28px}.app-shell .link-row.edit-mode .icon-button{width:28px}}
+@media(max-width:360px){.app-shell .link-row.edit-mode{grid-template-columns:27px minmax(0,1fr) 26px 26px 26px;gap:4px}.app-shell .link-row.edit-mode .delete-link-button,.app-shell .link-row.edit-mode .icon-button{width:26px;height:28px}}
