@@ -580,3 +580,9 @@
 @media(max-width:1100px){.link-progress{width:104px;flex-basis:104px}.link-progress-bars{gap:3px}.link-row{gap:9px}}
 @media(max-width:760px){.link-row{flex-wrap:wrap;align-items:center}.link-details{flex:1 1 calc(100% - 60px)}.link-metrics{margin-left:50px;min-width:74px}.link-progress{margin-left:auto;width:124px;flex-basis:124px}.link-row .toggle,.link-row .icon-button{flex:0 0 34px}}
 @media(max-width:430px){.link-progress{width:100px;flex-basis:100px}.link-progress-heading{font-size:8px}.link-metrics{margin-left:49px}}
+
+.link-progress-heading select{max-width:96px;min-width:0;padding:3px 4px;border:1px solid #e8ebe2;border-radius:6px;background:#fff;color:#777b6d;font:500 9px "DM Sans",sans-serif}
+.link-progress-heading{min-width:0}
+.link-progress-bars{gap:2px}
+.link-progress-day small{white-space:nowrap}
+@media(max-width:760px){.link-progress-heading select{max-width:94px;font-size:9px}.link-progress{flex:1 1 100%;width:100%;margin:5px 0 0 49px}.link-progress-bars{gap:3px}.link-progress-bar{max-width:8px}.link-progress-day{overflow:hidden}}
