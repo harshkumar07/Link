@@ -88,12 +88,14 @@ export function buildApp() {
   app.get("/api/v1/profile/me/analytics", async (request, reply) => {
     const user = authUser(request);
     if (!user) return reply.code(401).send({ message: "Please sign in to continue." });
+    const parsed = z.object({ days: z.coerce.number().int().refine((value) => value === 30 || value === 90).default(30) }).safeParse(request.query);
+    if (!parsed.success) return reply.code(400).send({ message: "Choose a 30-day or 3-month analytics range." });
     const profile = profiles.get(user.id) ?? seedProfile(user.id, user.name);
-    const days = Array.from({ length: 7 }, (_, index) => {
+    const days = Array.from({ length: parsed.data.days }, (_, index) => {
       const date = new Date();
       date.setUTCHours(0, 0, 0, 0);
-      date.setUTCDate(date.getUTCDate() - (6 - index));
-      return { date: date.toISOString().slice(0, 10), label: date.toLocaleDateString("en", { weekday: "short", timeZone: "UTC" }) };
+      date.setUTCDate(date.getUTCDate() - (parsed.data.days - 1 - index));
+      return { date: date.toISOString().slice(0, 10), label: date.toLocaleDateString("en", { month: "short", day: "numeric", timeZone: "UTC" }), weekday: date.toLocaleDateString("en", { weekday: "short", timeZone: "UTC" }) };
     });
     return { days, links: profile.links.map((link) => ({ id: link.id, clicks: days.map((day) => linkClickHistory.get(link.id)?.get(day.date) ?? 0) })) };
   });
