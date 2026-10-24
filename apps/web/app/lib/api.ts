@@ -17,3 +17,5 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   }
   return payload as T;
 }
+
+export type LinkAnalytics = { days: { date: string; label: string }[]; links: { id: string; clicks: number[] }[] };
