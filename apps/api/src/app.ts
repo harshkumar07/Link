@@ -84,16 +84,6 @@ export function buildApp() {
     return { available: !owner || owner === user.id || currentProfile?.username === parsed.data.username };
   });
 
-  app.get("/api/v1/profile/username-availability/:username", async (request, reply) => {
-    const user = authUser(request);
-    if (!user) return reply.code(401).send({ message: "Please sign in to continue." });
-    const parsed = z.object({ username: slugSchema }).safeParse(request.params);
-    if (!parsed.success) return reply.code(400).send({ message: "Username format is invalid." });
-    const currentProfile = profiles.get(user.id);
-    const owner = profileByUsername.get(parsed.data.username);
-    return { available: !owner || owner === user.id || currentProfile?.username === parsed.data.username };
-  });
-
   app.get("/api/v1/profile/me", async (request, reply) => {
     const user = authUser(request);
     if (!user) return reply.code(401).send({ message: "Please sign in to continue." });
