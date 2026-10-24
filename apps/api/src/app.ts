@@ -7,6 +7,7 @@ type LinkRecord = { id: string; title: string; url: string; kind: string; clicks
 type ProfileRecord = { userId: string; username: string; displayName: string; bio: string; published: boolean; template: "stack" | "profile" | "cards" | "minimal" | "gradient"; theme: "sage" | "midnight" | "blush" | "ocean" | "lavender" | "sunshine"; linkStyle: "soft" | "outline" | "solid"; baseColor: string; links: LinkRecord[] };
 const profiles = new Map<string, ProfileRecord>();
 const profileByUsername = new Map<string, string>();
+const linkClickHistory = new Map<string, Map<string, number>>();
 const cookieName = "link_session";
 const emailSchema = z.string().trim().email().max(254);
 const passwordSchema = z.string().min(8).max(128);
@@ -84,6 +85,19 @@ export function buildApp() {
     return { available: !owner || owner === user.id || currentProfile?.username === parsed.data.username };
   });
 
+  app.get("/api/v1/profile/me/analytics", async (request, reply) => {
+    const user = authUser(request);
+    if (!user) return reply.code(401).send({ message: "Please sign in to continue." });
+    const profile = profiles.get(user.id) ?? seedProfile(user.id, user.name);
+    const days = Array.from({ length: 7 }, (_, index) => {
+      const date = new Date();
+      date.setUTCHours(0, 0, 0, 0);
+      date.setUTCDate(date.getUTCDate() - (6 - index));
+      return { date: date.toISOString().slice(0, 10), label: date.toLocaleDateString("en", { weekday: "short", timeZone: "UTC" }) };
+    });
+    return { days, links: profile.links.map((link) => ({ id: link.id, clicks: days.map((day) => linkClickHistory.get(link.id)?.get(day.date) ?? 0) })) };
+  });
+
   app.get("/api/v1/profile/me", async (request, reply) => {
     const user = authUser(request);
     if (!user) return reply.code(401).send({ message: "Please sign in to continue." });
@@ -143,10 +157,26 @@ export function buildApp() {
     if (!profile) return reply.code(404).send({ message: "Link not found." });
     const originalLength = profile.links.length;
     profile.links = profile.links.filter((link) => link.id !== params.data.linkId);
+    linkClickHistory.delete(params.data.linkId);
     if (profile.links.length === originalLength) return reply.code(404).send({ message: "Link not found." });
     profile.links.forEach((link, index) => { link.position = index; });
     return { ok: true };
   });
+  app.post("/api/v1/public/:username/links/:linkId/click", async (request, reply) => {
+    const parsed = z.object({ username: slugSchema, linkId: z.string().min(1) }).safeParse(request.params);
+    if (!parsed.success) return reply.code(404).send({ message: "Link not found." });
+    const userId = profileByUsername.get(parsed.data.username);
+    const profile = userId ? profiles.get(userId) : undefined;
+    const link = profile?.links.find((item) => item.id === parsed.data.linkId && item.enabled);
+    if (!profile || !profile.published || !link) return reply.code(404).send({ message: "Link not found." });
+    const date = new Date().toISOString().slice(0, 10);
+    let history = linkClickHistory.get(link.id);
+    if (!history) { history = new Map<string, number>(); linkClickHistory.set(link.id, history); }
+    history.set(date, (history.get(date) ?? 0) + 1);
+    link.clicks += 1;
+    return { ok: true };
+  });
+
   app.get("/api/v1/public/:username", async (request, reply) => {
     const parsed = z.object({ username: slugSchema }).safeParse(request.params);
     if (!parsed.success) return reply.code(404).send({ message: "Profile not found." });
