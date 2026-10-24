@@ -19,7 +19,7 @@ export default function AuthPage() {
     event.preventDefault(); setError(""); setWorking(true);
     try {
       await api(isRegister ? "/auth/register" : "/auth/login", { method: "POST", body: JSON.stringify({ email, password, name }) });
-      window.location.assign("/");
+      window.location.assign("/dashboard");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Unable to authenticate. Please try again."); }
     finally { setWorking(false); }
   }
