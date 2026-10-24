@@ -19,6 +19,7 @@ export function meta() {
 
 export default function Home() {
   const [analytics, setAnalytics] = useState<LinkAnalytics>({ days: [], links: [] });
+  const [, setHasChanges] = useState(false);
   const [profile, setProfile] = useState<Profile>({ username: "harshkumar", displayName: "Harsh Kumar", bio: "Developer, builder & curious mind. Making useful things for the internet.", published: true, template: "stack", theme: "sage", linkStyle: "soft", links: starterLinks });
   const [toast, setToast] = useState("");
   const [modal, setModal] = useState<"link" | "profile" | "appearance" | "theme" | "settings" | null>(null);
