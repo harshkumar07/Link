@@ -40,7 +40,6 @@ export default function Home() {
   const [device, setDevice] = useState("iphone");
   const [showDesigns, setShowDesigns] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
