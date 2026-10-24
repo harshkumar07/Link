@@ -456,3 +456,6 @@
 
 @media(max-width:540px){.app-shell .link-row.edit-mode{grid-template-columns:30px minmax(0,1fr) 28px 28px 28px;gap:5px}.app-shell .link-row.edit-mode .delete-link-button{grid-column:auto;grid-row:auto;width:28px;height:30px;padding:0}.app-shell .link-row.edit-mode .toggle{width:28px}.app-shell .link-row.edit-mode .icon-button{width:28px}}
 @media(max-width:360px){.app-shell .link-row.edit-mode{grid-template-columns:27px minmax(0,1fr) 26px 26px 26px;gap:4px}.app-shell .link-row.edit-mode .delete-link-button,.app-shell .link-row.edit-mode .icon-button{width:26px;height:28px}}
+
+/* Username availability feedback; keep palette controls calm and readable. */
+.username-feedback{font-size:11px;line-height:1.55;color:#737b70;margin-top:-8px}.username-available{color:#4e7954}.username-taken,.username-invalid,.username-error{color:#a14f54}.username-checking{color:#667b96}.username-suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.username-suggestions button{border:1px solid #dfe5dc;background:#f7faf5;color:#536c50;border-radius:8px;padding:6px 9px;font-size:10px;font-weight:700}
