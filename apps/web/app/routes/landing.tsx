@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Brand, Button } from "../components/ui";
+import { Brand } from "../components/ui";
 import "../styles.css";
 
 export function meta() {
