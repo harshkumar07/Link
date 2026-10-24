@@ -566,3 +566,17 @@
  .landing-how{padding-top:38px;padding-bottom:40px}
  .landing-final{border-radius:12px}
 }
+
+/* Per-link seven-day click activity */
+.link-row{gap:12px}
+.link-progress{width:132px;flex:0 0 132px;padding:0 2px;margin-left:auto}
+.link-progress-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#898c80;font-size:9px;white-space:nowrap}
+.link-progress-heading strong{color:#42483a;font-size:10px}
+.link-progress-bars{height:43px;display:flex;align-items:flex-end;justify-content:space-between;gap:5px;padding-top:3px}
+.link-progress-day{height:40px;min-width:0;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px}
+.link-progress-bar{width:100%;max-width:11px;min-height:3px;background:#dbe8cb;border-radius:4px 4px 2px 2px;transition:height .2s ease}
+.link-progress-day small{font-size:8px;color:#a0a297;line-height:1}
+.link-row.off .link-progress-bar{background:#e6e7e2}
+@media(max-width:1100px){.link-progress{width:104px;flex-basis:104px}.link-progress-bars{gap:3px}.link-row{gap:9px}}
+@media(max-width:760px){.link-row{flex-wrap:wrap;align-items:center}.link-details{flex:1 1 calc(100% - 60px)}.link-metrics{margin-left:50px;min-width:74px}.link-progress{margin-left:auto;width:124px;flex-basis:124px}.link-row .toggle,.link-row .icon-button{flex:0 0 34px}}
+@media(max-width:430px){.link-progress{width:100px;flex-basis:100px}.link-progress-heading{font-size:8px}.link-metrics{margin-left:49px}}
