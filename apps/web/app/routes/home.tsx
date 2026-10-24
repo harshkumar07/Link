@@ -20,7 +20,7 @@ export function meta() {
 export default function Home() {
   const [profile, setProfile] = useState<Profile>({ username: "harshkumar", displayName: "Harsh Kumar", bio: "Developer, builder & curious mind. Making useful things for the internet.", published: true, template: "stack", theme: "sage", linkStyle: "soft", links: starterLinks });
   const [toast, setToast] = useState("");
-  const [modal, setModal] = useState<"link" | "profile" | "appearance" | "settings" | null>(null);
+  const [modal, setModal] = useState<"link" | "profile" | "appearance" | "theme" | "settings" | null>(null);
   const [editing, setEditing] = useState<LinkItem | null>(null);
   const [linkTitle, setLinkTitle] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
